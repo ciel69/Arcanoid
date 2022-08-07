@@ -1,6 +1,6 @@
 import '../styles/main.css';
 import '../assets/fonts/kongtext.ttf';
-import './game';
+import './init';
 
 /** Находим элемент с нашим приложением */
 const app = document.getElementById('app');
