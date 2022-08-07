@@ -4,5 +4,5 @@ export class Platform {
   }
 
   x: number = 0
-  y: number = 550
+  y: number = 486
 }

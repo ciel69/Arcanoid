@@ -12,7 +12,7 @@ app!.innerHTML = `
   
   <main>
     <div id="gameContainer">
-      <canvas id="canvas" width="1000" height="600"></canvas>
+      <canvas id="canvas" width="960" height="540"></canvas>
       <div id="results">
         <h2>Results</h2>
       </div>
