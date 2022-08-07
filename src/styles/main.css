@@ -1,0 +1,37 @@
+@font-face {
+    font-family: 'kongtext';
+    src: local('kongtext'), url('../assets/fonts/kongtext.ttf');
+    font-weight: 400;
+}
+
+body {
+    background-color: black;
+    color: aliceblue;
+    font-family: 'kongtext', Arial, sans-serif;
+}
+
+h1 {
+    text-align: center;
+    text-transform: uppercase;
+}
+
+#gameContainer {
+    display: flex;
+    justify-content: center;
+}
+
+#results {
+    border: 2px dashed olivedrab;
+    width: 400px;
+}
+
+#results h2 {
+    text-align: center;
+}
+
+#canvas {
+    border: 2px dashed blueviolet;
+    height: 600px;
+    width: 1000px;
+}
+
