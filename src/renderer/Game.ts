@@ -6,7 +6,7 @@ import platform from '../assets/images/platform.png'
 import { Platform } from "../elements/Platform"
 import { Sprites } from "../types/Sprites"
 import { Ball } from '../elements/Ball'
-import { Brick } from '../elements/Brick'
+import levels from './levels'
 
 export class Game {
   /** Создаём холст */
@@ -14,16 +14,35 @@ export class Game {
   ctx = this.canvas.getContext('2d')
   width = 960
   height = 540
+  frame = 0
 
   /** Создаём игровые элементы */
-  ball = new Ball(469, 489)
-  brick = new Brick(0, 0)
+  ball = new Ball(
+      469,
+      489,
+      2,
+  )
+  bricks: {x: number, y: number}[] = []
   platform = new Platform(448)
   sprites: Sprites = {
     bg: new Image(),
     ball: new Image(),
     brick: new Image(),
     platform: new Image(),
+  }
+
+  create(level: number): void {
+     levels[level].forEach((row, rowIndex) => {
+      row.forEach((el, elIndex) => {
+        if (el === 1) {
+          this.bricks.push({
+            x: elIndex * 64,
+            y: rowIndex * 32,
+          })
+        }
+      })
+    })
+
   }
 
   /** Загрузка спрайтов */
@@ -36,6 +55,7 @@ export class Game {
 
   start() {
     this.load()
+    this.create(2)
     this.run()
   }
 
@@ -45,15 +65,28 @@ export class Game {
 
     /** Отрисовка спрайтов */
     this.ctx!.drawImage(this.sprites.bg, 0, 0)
-    this.ctx!.drawImage(this.sprites.ball, this.ball.x, this.ball.y)
-    this.ctx!.drawImage(this.sprites.brick, this.brick.x, this.brick.y)
+
+    /** Вращение мячика: сохраняем канвас, сдвигаем и поворачиваем матрицу, */
+    /** отрисовываем мячик и затем возвращаем канвас на место */
+    this.ctx!.save()
+    this.ctx!.translate(this.ball.x + 11, this.ball.y + 11)
+    this.ctx!.rotate(this.ball.ballAngle)
+    this.ctx!.drawImage(this.sprites.ball, -11, -11)
+    this.ctx!.rotate(-this.ball.ballAngle)
+    this.ctx!.translate(-this.ball.x - 11, -this.ball.y - 11)
+    this.ctx!.restore()
+
+    this.bricks.forEach((el) => {
+      this.ctx!.drawImage(this.sprites.brick, el.x, el.y)
+    })
+
     this.ctx!.drawImage(this.sprites.platform, this.platform.x, this.platform.y)
+
   }
 
   run() {
-    let i = 0;
-    console.log(i);
-    i++
+    console.log(this.frame);
+    this.frame++
     this.render();
 
     /** Перерисовка канваса */
