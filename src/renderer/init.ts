@@ -1,9 +1,17 @@
 import { Game } from "./Game";
 
-window.addEventListener('load', () => {
+setTimeout(() => {
   const NewGame = new Game()
-  NewGame.start()
-})
+
+  window.addEventListener('load', function () {
+    NewGame.start()
+  })
+
+  window.addEventListener('keydown', (e) => {
+    NewGame.handleKeyPressed(e.key)
+  })
 
 // @ts-ignore
-window.Game = Game
+  window.Game = NewGame
+
+})

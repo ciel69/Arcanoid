@@ -14,16 +14,15 @@ export class Game {
   ctx = this.canvas.getContext('2d')
   width = 960
   height = 540
-  frame = 0
 
   /** Создаём игровые элементы */
   ball = new Ball(
       469,
       489,
-      2,
+      0,
   )
-  bricks: {x: number, y: number}[] = []
-  platform = new Platform(448)
+  bricks: { x: number, y: number }[] = []
+  platform = new Platform()
   sprites: Sprites = {
     bg: new Image(),
     ball: new Image(),
@@ -31,8 +30,13 @@ export class Game {
     platform: new Image(),
   }
 
+  /** Состояние */
+  currentLevel = 3
+  platformDirection: 'right' | 'left' = 'right'
+
+  /** Создание уровня */
   create(level: number): void {
-     levels[level].forEach((row, rowIndex) => {
+    levels[level].forEach((row, rowIndex) => {
       row.forEach((el, elIndex) => {
         if (el === 1) {
           this.bricks.push({
@@ -42,7 +46,6 @@ export class Game {
         }
       })
     })
-
   }
 
   /** Загрузка спрайтов */
@@ -55,7 +58,7 @@ export class Game {
 
   start() {
     this.load()
-    this.create(2)
+    this.create(this.currentLevel)
     this.run()
   }
 
@@ -69,11 +72,11 @@ export class Game {
     /** Вращение мячика: сохраняем канвас, сдвигаем и поворачиваем матрицу, */
     /** отрисовываем мячик и затем возвращаем канвас на место */
     this.ctx!.save()
-    this.ctx!.translate(this.ball.x + 11, this.ball.y + 11)
+    this.ctx!.translate(this.ball.x + 12, this.ball.y + 12)
     this.ctx!.rotate(this.ball.ballAngle)
-    this.ctx!.drawImage(this.sprites.ball, -11, -11)
+    this.ctx!.drawImage(this.sprites.ball, -12, -12)
     this.ctx!.rotate(-this.ball.ballAngle)
-    this.ctx!.translate(-this.ball.x - 11, -this.ball.y - 11)
+    this.ctx!.translate(-this.ball.x - 12, -this.ball.y - 12)
     this.ctx!.restore()
 
     this.bricks.forEach((el) => {
@@ -84,15 +87,58 @@ export class Game {
 
   }
 
+  update(): void {
+    if (this.ball.isFlying) {
+      this.ball.fly()
+    }
+  }
+
   run() {
-    console.log(this.frame);
-    this.frame++
-    this.render();
+    // this.frame++;
+    this.update()
+    this.render()
 
     /** Перерисовка канваса */
     window.requestAnimationFrame(() => {
       this.run();
     });
+  }
+
+  /** Обработка нажатий на клавиатуру */
+  handleKeyPressed(key: string): void {
+    switch (key) {
+      case 'ArrowLeft':
+        this.platform.move(0)
+        /** Если мячик не в полёте - он движется вместе с платформой */
+        if (!this.ball.isFlying) {
+          this.ball.x = this.platform.x + this.platform.width / 2 - this.ball.radius
+        }
+        this.platformDirection = 'left'
+        break
+      case 'ArrowRight':
+        this.platform.move(1)
+        /** Если мячик не в полёте - он движется вместе с платформой */
+        if (!this.ball.isFlying) {
+          this.ball.x = this.platform.x + this.platform.width / 2 - this.ball.radius
+        }
+        this.platformDirection = 'right'
+        break
+      case 'ArrowUp' :
+        if (!this.ball.isFlying) {
+          if (this.platformDirection === 'right') {
+            this.ball.xVelocity = -4
+            this.ball.rotateSpeed = 5
+          } else {
+            this.ball.xVelocity = 4
+            this.ball.rotateSpeed = -5
+          }
+        }
+        this.ball.isFlying = true
+        this.ball.fly()
+        break
+      default:
+        break
+    }
   }
 }
 
