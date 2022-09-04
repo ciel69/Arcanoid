@@ -1,9 +1,8 @@
 export class Platform {
-
-  x = 448
-  y = 486
   width = 64
   velocity = 16
+  x = 480 - this.width / 2
+  y = 486
   dx = 0
 
   move(direction: 0 | 1): void {
@@ -12,7 +11,7 @@ export class Platform {
         : this.dx = -this.velocity
 
     if (
-        this.x <= 896 &&
+        this.x <= 960 - this.width / 2 &&
         this.x >= 0
     ) {
       if (

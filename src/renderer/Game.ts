@@ -7,6 +7,7 @@ import { Platform } from "../elements/Platform"
 import { Sprites } from "../types/Sprites"
 import { Ball } from '../elements/Ball'
 import levels from './levels'
+import { Brick } from '../elements/Brick'
 
 export class Game {
   /** Создаём холст */
@@ -16,13 +17,6 @@ export class Game {
   height = 540
 
   /** Создаём игровые элементы */
-  ball = new Ball(
-      469,
-      489,
-      0,
-  )
-  bricks: { x: number, y: number }[] = []
-  platform = new Platform()
   sprites: Sprites = {
     bg: new Image(),
     ball: new Image(),
@@ -30,9 +24,26 @@ export class Game {
     platform: new Image(),
   }
 
+  bricks: Brick[] = []
+  platform = new Platform()
+
+  /** Создаём шарик */
+  ball = new Ball(
+      480,
+      498,
+      0,
+      this.bricks,
+  )
+
   /** Состояние */
-  currentLevel = 3
+  currentLevel = 0
   platformDirection: 'right' | 'left' = 'right'
+
+  constructor(
+      level: number,
+  ) {
+    this.currentLevel = level
+  }
 
   /** Создание уровня */
   create(level: number): void {
@@ -42,6 +53,9 @@ export class Game {
           this.bricks.push({
             x: elIndex * 64,
             y: rowIndex * 32,
+            width: 64,
+            height: 32,
+            visible: true,
           })
         }
       })
@@ -72,15 +86,17 @@ export class Game {
     /** Вращение мячика: сохраняем канвас, сдвигаем и поворачиваем матрицу, */
     /** отрисовываем мячик и затем возвращаем канвас на место */
     this.ctx!.save()
-    this.ctx!.translate(this.ball.x + 12, this.ball.y + 12)
+    this.ctx!.translate(this.ball.x, this.ball.y)
     this.ctx!.rotate(this.ball.ballAngle)
-    this.ctx!.drawImage(this.sprites.ball, -12, -12)
+    this.ctx!.drawImage(this.sprites.ball, -this.ball.radius, -this.ball.radius)
     this.ctx!.rotate(-this.ball.ballAngle)
-    this.ctx!.translate(-this.ball.x - 12, -this.ball.y - 12)
+    this.ctx!.translate(-this.ball.x, -this.ball.y)
     this.ctx!.restore()
 
     this.bricks.forEach((el) => {
-      this.ctx!.drawImage(this.sprites.brick, el.x, el.y)
+      if (el.visible) {
+        this.ctx!.drawImage(this.sprites.brick, el.x, el.y)
+      }
     })
 
     this.ctx!.drawImage(this.sprites.platform, this.platform.x, this.platform.y)
@@ -94,7 +110,6 @@ export class Game {
   }
 
   run() {
-    // this.frame++;
     this.update()
     this.render()
 
@@ -111,7 +126,7 @@ export class Game {
         this.platform.move(0)
         /** Если мячик не в полёте - он движется вместе с платформой */
         if (!this.ball.isFlying) {
-          this.ball.x = this.platform.x + this.platform.width / 2 - this.ball.radius
+          this.ball.x = this.platform.x + this.platform.width / 2
         }
         this.platformDirection = 'left'
         break
@@ -119,7 +134,7 @@ export class Game {
         this.platform.move(1)
         /** Если мячик не в полёте - он движется вместе с платформой */
         if (!this.ball.isFlying) {
-          this.ball.x = this.platform.x + this.platform.width / 2 - this.ball.radius
+          this.ball.x = this.platform.x + this.platform.width / 2
         }
         this.platformDirection = 'right'
         break
@@ -127,10 +142,10 @@ export class Game {
         if (!this.ball.isFlying) {
           if (this.platformDirection === 'right') {
             this.ball.xVelocity = -4
-            this.ball.rotateSpeed = 5
+            this.ball.rotateSpeed = 6
           } else {
             this.ball.xVelocity = 4
-            this.ball.rotateSpeed = -5
+            this.ball.rotateSpeed = -6
           }
         }
         this.ball.isFlying = true
