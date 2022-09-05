@@ -1,4 +1,6 @@
 import { Brick } from './Brick'
+import { Platform } from './Platform'
+import { BaseGeometry } from '../types/baseGeometry'
 
 type Direction = 'x' | 'y' | 'both'
 type BallSpeed = -6 | -4 | -3 | -2 | -1 | 0 | 1 | 2 | 3 | 4 | 6
@@ -15,15 +17,17 @@ export class Ball {
   isFlying = false
   radius = 12
   collisions = 0
-  bricks: Brick[] = []
+  bricks: Brick[]
+  platform: Platform
 
   private _ballAngle = 0
 
-  constructor(x: number, y: number, rotateSpeed: number, bricks: Brick[]) {
+  constructor(x: number, y: number, rotateSpeed: number, bricks: Brick[], platform: Platform) {
     this.x = x
     this.y = y
     this.rotateSpeed = rotateSpeed
     this.bricks = bricks
+    this.platform = platform
   }
 
   /** Отдаём угол вращения мяча */
@@ -44,9 +48,26 @@ export class Ball {
 
     this.isBorderCollide()
     this.isBrickCollide()
+    this.isPlatformCollide()
 
     this.x += this.dx
     this.y += this.dy
+  }
+
+  /** Было ли столкновение с платформой */
+  private isPlatformCollide(): void {
+      const x = this.x + this.dx
+      const y = this.y + this.dy
+
+    if (
+        this.platform.x < x + this.radius && // Заходит за левую сторону кирпичика
+        this.platform.x + this.platform.width > x - this.radius && // Заходит за правую сторону кирпичика
+        this.platform.y < y + this.radius && // Заходит за верхнюю часть кирпичика
+        this.platform.y + this.platform.height > y - this.radius // Заходит за нижнюю сторону кирпичика
+    ) {
+      this.bounce(this.getBounceDirection(x, y, this.platform))
+      console.log('Столкновение с платформой')
+  }
   }
 
   /** Было ли столкновение с краями экрана? */
@@ -63,12 +84,17 @@ export class Ball {
       x = true
     }
 
-    /** Отскок от верхней или нижней стенки */
+    /** Отскок от верхней стенки */
     if (
-        this.y + this.dy < this.radius ||
-        this.y + this.dy > 540 - Math.abs(this.yVelocity) - this.radius
+        this.y + this.dy < this.radius
     ) {
       y = true
+    }
+
+    if ( this.y + this.dy > 540 - Math.abs(this.yVelocity) - this.radius) {
+      this.xVelocity = 0
+      this.yVelocity = 0
+      alert('Ты проиграл! Нажими Ctrl + R чтобы начать заново!')
     }
 
     /** Определяем направление отскока от стены */
@@ -115,7 +141,7 @@ export class Ball {
   }
 
   /** Определяем направление отскока от кирпичика */
-  private getBounceDirection(x: number, y: number, el: Brick): Direction {
+  private getBounceDirection(x: number, y: number, el: BaseGeometry): Direction {
     /** Шарик летит слева снизу */
     if (this.dx > 0 && this.dy < 0)
       if (

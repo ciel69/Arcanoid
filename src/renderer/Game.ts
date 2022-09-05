@@ -1,7 +1,7 @@
 import ball from '../assets/images/ball.png'
 import bg from '../assets/images/bg.png'
 import brick from '../assets/images/brick.png'
-import platform from '../assets/images/platform.png'
+import platform from '../assets/images/platformG96.png'
 
 import { Platform } from "../elements/Platform"
 import { Sprites } from "../types/Sprites"
@@ -14,7 +14,12 @@ export class Game {
   canvas = document.getElementById('canvas') as HTMLCanvasElement
   ctx = this.canvas.getContext('2d')
   width = 960
-  height = 540
+  height = 600
+
+  /** Управление */
+  ArrowUp = false
+  ArrowLeft = false
+  ArrowRight = false
 
   /** Создаём игровые элементы */
   sprites: Sprites = {
@@ -33,6 +38,7 @@ export class Game {
       498,
       0,
       this.bricks,
+      this.platform,
   )
 
   /** Состояние */
@@ -50,17 +56,14 @@ export class Game {
     levels[level].forEach((row, rowIndex) => {
       row.forEach((el, elIndex) => {
         if (el === 1) {
-          this.bricks.push({
-            x: elIndex * 64,
-            y: rowIndex * 32,
-            width: 64,
-            height: 32,
-            visible: true,
-          })
+          this.bricks.push(
+              new Brick(elIndex * 64, rowIndex * 32, 64, 32, true),
+          )
         }
       })
     })
   }
+
 
   /** Загрузка спрайтов */
   load() {
@@ -104,12 +107,14 @@ export class Game {
   }
 
   update(): void {
-    if (this.ball.isFlying) {
+    if (this.ball.isFlying
+    ) {
       this.ball.fly()
     }
   }
 
   run() {
+    this.control()
     this.update()
     this.render()
 
@@ -120,25 +125,42 @@ export class Game {
   }
 
   /** Обработка нажатий на клавиатуру */
-  handleKeyPressed(key: string): void {
-    switch (key) {
-      case 'ArrowLeft':
-        this.platform.move(0)
-        /** Если мячик не в полёте - он движется вместе с платформой */
-        if (!this.ball.isFlying) {
-          this.ball.x = this.platform.x + this.platform.width / 2
-        }
-        this.platformDirection = 'left'
-        break
-      case 'ArrowRight':
-        this.platform.move(1)
-        /** Если мячик не в полёте - он движется вместе с платформой */
-        if (!this.ball.isFlying) {
-          this.ball.x = this.platform.x + this.platform.width / 2
-        }
-        this.platformDirection = 'right'
-        break
-      case 'ArrowUp' :
+  handleKeyPressed(key: string, status: boolean): void {
+    if (key === 'ArrowUp') {
+      this.ArrowUp = status
+    }
+
+    if (key === 'ArrowLeft') {
+      this.ArrowLeft = status
+    }
+
+    if (key === 'ArrowRight') {
+      this.ArrowRight = status
+    }
+  }
+
+  control(): void {
+    if (this.ArrowLeft) {
+      this.platform.move(0)
+      /** Если мячик не в полёте - он движется вместе с платформой */
+      if (!this.ball.isFlying) {
+        this.ball.x = this.platform.x + this.platform.width / 2
+      }
+      this.platformDirection = 'left'
+      console.log('left')
+    }
+
+    if (this.ArrowRight) {
+      this.platform.move(1)
+      /** Если мячик не в полёте - он движется вместе с платформой */
+      if (!this.ball.isFlying) {
+        this.ball.x = this.platform.x + this.platform.width / 2
+      }
+      this.platformDirection = 'right'
+      console.log('right')
+    }
+
+    if (this.ArrowUp) {
         if (!this.ball.isFlying) {
           if (this.platformDirection === 'right') {
             this.ball.xVelocity = -4
@@ -150,9 +172,6 @@ export class Game {
         }
         this.ball.isFlying = true
         this.ball.fly()
-        break
-      default:
-        break
     }
   }
 }

@@ -1,8 +1,11 @@
-export class Platform {
-  width = 64
-  velocity = 16
+import { BaseGeometry } from '../types/baseGeometry'
+
+export class Platform implements BaseGeometry{
+  width = 96
+  height = 16
+  velocity = 6
   x = 480 - this.width / 2
-  y = 486
+  y = 511
   dx = 0
 
   move(direction: 0 | 1): void {

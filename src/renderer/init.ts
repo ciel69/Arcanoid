@@ -8,7 +8,11 @@ setTimeout(() => {
   })
 
   window.addEventListener('keydown', (e) => {
-    NewGame.handleKeyPressed(e.key)
+    NewGame.handleKeyPressed(e.key, true)
+  })
+
+  window.addEventListener('keyup', (e) => {
+    NewGame.handleKeyPressed(e.key, false)
   })
 
 // @ts-ignore
