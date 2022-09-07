@@ -5,7 +5,7 @@ export class Platform implements BaseGeometry{
   height = 16
   velocity = 6
   x = 480 - this.width / 2
-  y = 511
+  y = 550
   dx = 0
 
   move(direction: 0 | 1): void {

@@ -1,7 +1,7 @@
 import { Game } from "./Game";
 
 setTimeout(() => {
-  const NewGame = new Game(3)
+  const NewGame = new Game(3, 1)
 
   window.addEventListener('load', function () {
     NewGame.start()

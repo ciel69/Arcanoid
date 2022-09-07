@@ -1,12 +1,13 @@
 import { Brick } from './Brick'
 import { Platform } from './Platform'
 import { BaseGeometry } from '../types/baseGeometry'
+import Rules from '../core/Config'
+import { sound } from '../core/Sound'
 
 type Direction = 'x' | 'y' | 'both'
 type BallSpeed = -6 | -4 | -3 | -2 | -1 | 0 | 1 | 2 | 3 | 4 | 6
 
 export class Ball {
-
   x = 0
   y = 0
   dx = 0
@@ -19,15 +20,25 @@ export class Ball {
   collisions = 0
   bricks: Brick[]
   platform: Platform
+  lives: number
+  isBallLost = false
 
   private _ballAngle = 0
 
-  constructor(x: number, y: number, rotateSpeed: number, bricks: Brick[], platform: Platform) {
+  constructor(
+      x: number,
+      y: number,
+      rotateSpeed: number,
+      bricks: Brick[],
+      platform: Platform,
+      lives: number
+  ) {
     this.x = x
     this.y = y
     this.rotateSpeed = rotateSpeed
     this.bricks = bricks
     this.platform = platform
+    this.lives = lives
   }
 
   /** Отдаём угол вращения мяча */
@@ -56,8 +67,8 @@ export class Ball {
 
   /** Было ли столкновение с платформой */
   private isPlatformCollide(): void {
-      const x = this.x + this.dx
-      const y = this.y + this.dy
+    const x = this.x + this.dx
+    const y = this.y + this.dy
 
     if (
         this.platform.x < x + this.radius && // Заходит за левую сторону кирпичика
@@ -67,7 +78,7 @@ export class Ball {
     ) {
       this.bounce(this.getBounceDirection(x, y, this.platform))
       console.log('Столкновение с платформой')
-  }
+    }
   }
 
   /** Было ли столкновение с краями экрана? */
@@ -81,20 +92,30 @@ export class Ball {
         this.x + this.dx < this.radius ||
         this.x + this.dx > 960 - Math.abs(this.xVelocity) - this.radius
     ) {
+      Rules.sound && sound.wallBounce.play()
       x = true
     }
 
     /** Отскок от верхней стенки */
-    if (
-        this.y + this.dy < this.radius
-    ) {
-      y = true
+    if (Rules.godMode) {
+      if (
+          this.y + this.dy < this.radius ||
+          this.y + this.dy > 600 - Math.abs(this.yVelocity) - this.radius
+      ) {
+        Rules.sound && sound.wallBounce.play()
+        y = true
+      }
+    } else {
+      if (
+          this.y + this.dy < this.radius
+      ) {
+        Rules.sound && sound.wallBounce.play()
+        y = true
+      }
     }
 
-    if ( this.y + this.dy > 540 - Math.abs(this.yVelocity) - this.radius) {
-      this.xVelocity = 0
-      this.yVelocity = 0
-      alert('Ты проиграл! Нажими Ctrl + R чтобы начать заново!')
+    if (this.y + this.dy > 580   - Math.abs(this.yVelocity) - this.radius) {
+      this.handleLostBall()
     }
 
     /** Определяем направление отскока от стены */
@@ -105,6 +126,25 @@ export class Ball {
     } else if (x && y) {
       this.bounce('both');
     }
+  }
+
+  private handleLostBall(): void {
+
+    /** Включаем флаг потери мяча */
+    this.isBallLost = true
+    this.lives -= 1
+    console.log('Осталось жизней: ', this.lives)
+
+    /** Останавливавем шарик */
+    this.xVelocity = 0
+    this.rotateSpeed = 0
+    this.dx = 0
+    this.dy = 0
+
+    /** Возвращаем шарик на платформу */
+    this.y = 537
+    this.x = this.platform.x + this.platform.width / 2
+    this.isFlying = false
   }
 
   /** Было ли столкновение с кирпичиком */
@@ -122,8 +162,6 @@ export class Ball {
       const x = this.x + this.dx
       const y = this.y + this.dy
 
-      /** Добавить логику для шарика сверху и снизу */
-
       if (
           el.x < x + this.radius && // Заходит за левую сторону кирпичика
           el.x + el.width > x - this.radius && // Заходит за правую сторону кирпичика
@@ -132,6 +170,7 @@ export class Ball {
       ) {
         el.visible = false
         isCollide = true
+        Rules.sound && sound.blockBounce.play()
         this.bounce(this.getBounceDirection(x, y, el))
       }
     })
