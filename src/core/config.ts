@@ -1,8 +1,8 @@
-const Config = {
+const config = {
   godMode: false,
   music: false,
   sound: true,
   systemInfo: true,
 }
 
-export default Config
+export default config

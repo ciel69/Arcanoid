@@ -8,8 +8,9 @@ import { Sprites } from "../types/Sprites"
 import { Ball } from '../elements/Ball'
 import levels from '../core/levels'
 import { Brick } from '../elements/Brick'
-import { sound } from '../core/Sound'
-import Rules from '../core/Config'
+import { sound } from '../core/sound'
+import Rules from '../core/config'
+import { KeyDelayStatus } from '../types/KeyDelayStatus'
 
 
 export class Game {
@@ -24,6 +25,17 @@ export class Game {
   ArrowLeft = false
   ArrowRight = false
   platformDirection: 'right' | 'left' = 'right'
+
+  keyDelayStatus: KeyDelayStatus = {
+    keyDelay: {
+      ' ': false,
+      s: false,
+    },
+    delayInProgress: {
+      ' ': false,
+      s: false,
+    }
+  }
 
   /** Элементы игры */
   sprites: Sprites
@@ -84,7 +96,7 @@ export class Game {
         if (el === 1) {
           this.bricks.push(
               new Brick(
-                  elIndex * 64, rowIndex * 32, 64, 32, true
+                  elIndex * 64, rowIndex * 32, 64, 32, true,
               ),
           )
         }
@@ -221,7 +233,7 @@ export class Game {
     /** Отрисовка спрайтов */
     this.ctx!.drawImage(this.sprites.bg, 0, 0)
     !this.showStartMenu && this.ctx!.drawImage(
-        this.sprites.platform, this.platform.x, this.platform.y
+        this.sprites.platform, this.platform.x, this.platform.y,
     )
     /** Полёт и вращение шарика */
     !this.showStartMenu && this.ballDraw()
@@ -247,25 +259,11 @@ export class Game {
   /** Обработка нажатий на клавиатуру */
   handleKeyPressed(key: string, status: boolean): void {
     if (key === ' ') {
-      if (this.showStartMenu && this.isMusicOn){
-        sound.track1.stop()
-        this.isMusicOn = false
-      this.showStartMenu = false
-      }
-
-      if (this.isGameOver) {
-        this.ball.lives = this.lives
-        this.isMusicOn = false
-        this.showStartMenu = true
-        this.isGameOver = false
-        this.showLevel = true
-        // this.newGameIsCreating = true
-        this.restart()
-      }
+     this.keyWithDelayPressed(key)
     }
 
     if (key === 's') {
-      Rules.systemInfo = !Rules.systemInfo
+      this.keyWithDelayPressed(key)
     }
 
     if (!this.showStartMenu && !this.isGameOver) {
@@ -281,6 +279,42 @@ export class Game {
       if (key === 'ArrowRight') {
         this.ArrowRight = status
       }
+    }
+  }
+
+  keyWithDelayPressed(key: string): void {
+    if (!this.keyDelayStatus.delayInProgress[key] && !this.keyDelayStatus.keyDelay[key]) {
+      this.keyDelayStatus.delayInProgress[key] = true
+      setTimeout(() => {
+        this.keyDelayStatus.delayInProgress[key] = false
+        this.keyDelayStatus.keyDelay[key] = false
+      }, 400)
+    }
+
+    if (!this.keyDelayStatus.keyDelay[key]) {
+      switch (key) {
+        case ('s'): Rules.systemInfo = !Rules.systemInfo; break
+        case (' '): this.spacePressed(); break
+      }
+      this.keyDelayStatus.keyDelay[key] = true
+    }
+  }
+
+  spacePressed():void {
+    if (this.showStartMenu && this.isMusicOn) {
+      sound.track1.stop()
+      this.isMusicOn = false
+      this.showStartMenu = false
+    }
+
+    if (this.isGameOver) {
+      this.ball.lives = this.lives
+      this.isMusicOn = false
+      this.showStartMenu = true
+      this.isGameOver = false
+      this.showLevel = true
+      // this.newGameIsCreating = true
+      this.restart()
     }
   }
 

@@ -1,8 +1,8 @@
 import { Brick } from './Brick'
 import { Platform } from './Platform'
 import { BaseGeometry } from '../types/baseGeometry'
-import Rules from '../core/Config'
-import { sound } from '../core/Sound'
+import Rules from '../core/config'
+import { sound } from '../core/sound'
 
 type Direction = 'x' | 'y' | 'both'
 type BallSpeed = -6 | -4 | -3 | -2 | -1 | 0 | 1 | 2 | 3 | 4 | 6
@@ -22,6 +22,7 @@ export class Ball {
   platform: Platform
   lives: number
   isBallLost = false
+  platformCollideDelay = 0
 
   private _ballAngle = 0
 
@@ -70,14 +71,22 @@ export class Ball {
     const x = this.x + this.dx
     const y = this.y + this.dy
 
+    /** Уменьшаем на единицу задержку столкновения с платформой, если оно не равно нулю */
+    if (this.platformCollideDelay > 0) {
+      this.platformCollideDelay -= 1
+    }
+
     if (
         this.platform.x < x + this.radius && // Заходит за левую сторону кирпичика
         this.platform.x + this.platform.width > x - this.radius && // Заходит за правую сторону кирпичика
         this.platform.y < y + this.radius && // Заходит за верхнюю часть кирпичика
         this.platform.y + this.platform.height > y - this.radius // Заходит за нижнюю сторону кирпичика
     ) {
-      this.bounce(this.getBounceDirection(x, y, this.platform))
-      console.log('Столкновение с платформой')
+      /** Обрабатываем столкновение с платформой только если задержка равна нулю */
+      if (!this.platformCollideDelay) {
+        this.bounce(this.getBounceDirection(x, y, this.platform))
+        this.platformCollideDelay = 5
+      }
     }
   }
 

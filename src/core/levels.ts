@@ -1,4 +1,4 @@
-const levels = [
+const Levels = [
   /** Уровень 0 */
   [
     [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
@@ -91,4 +91,4 @@ const levels = [
   ],
 ]
 
-export default levels
+export default Levels
