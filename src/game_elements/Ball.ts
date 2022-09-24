@@ -1,13 +1,17 @@
 import { Brick } from './Brick'
 import { Platform } from './Platform'
 import { BaseGeometry } from '../types/baseGeometry'
-import Rules from '../core/config'
-import { sound } from '../core/sound'
+import Rules from '../main/game_config'
+import { sound } from '../modules/sound'
+import { Sprites } from '../types/Sprites'
 
 type Direction = 'x' | 'y' | 'both'
 type BallSpeed = -6 | -4 | -3 | -2 | -1 | 0 | 1 | 2 | 3 | 4 | 6
 
 export class Ball {
+  ctx: CanvasRenderingContext2D | null
+  sprites: Sprites
+
   x = 0
   y = 0
   dx = 0
@@ -32,7 +36,9 @@ export class Ball {
       rotateSpeed: number,
       bricks: Brick[],
       platform: Platform,
-      lives: number
+      lives: number,
+      ctx: CanvasRenderingContext2D | null,
+      sprites: Sprites
   ) {
     this.x = x
     this.y = y
@@ -40,6 +46,8 @@ export class Ball {
     this.bricks = bricks
     this.platform = platform
     this.lives = lives
+    this.ctx = ctx
+    this.sprites = sprites
   }
 
   /** Отдаём угол вращения мяча */
@@ -123,7 +131,7 @@ export class Ball {
       }
     }
 
-    if (this.y + this.dy > 580   - Math.abs(this.yVelocity) - this.radius) {
+    if (this.y + this.dy > 620   - Math.abs(this.yVelocity) - this.radius) {
       this.handleLostBall()
     }
 
@@ -246,5 +254,17 @@ export class Ball {
 
     this.rotateSpeed = -this.rotateSpeed
     this.collisions += 1
+  }
+
+  public ballDraw(): void {
+    /** Вращение мячика: сохраняем канвас, сдвигаем и поворачиваем матрицу, */
+    /** отрисовываем мячик и затем возвращаем канвас на место */
+    this.ctx!.save()
+    this.ctx!.translate(this.x, this.y)
+    this.ctx!.rotate(this.ballAngle)
+    this.ctx!.drawImage(this.sprites.ball, -this.radius, -this.radius)
+    this.ctx!.rotate(-this.ballAngle)
+    this.ctx!.translate(-this.x, -this.y)
+    this.ctx!.restore()
   }
 }

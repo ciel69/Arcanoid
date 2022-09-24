@@ -1,18 +1,18 @@
-import { Game } from "./Game";
+import { Core } from "./Core";
 
 setTimeout(() => {
-  const NewGame = new Game(3, 1)
+  const NewGame = new Core(1, 3)
 
   window.addEventListener('load', function () {
     NewGame.start()
   })
 
   window.addEventListener('keydown', (e) => {
-    NewGame.handleKeyPressed(e.key, true)
+    NewGame.directionHandler.handleKeyPressed(e.key, true)
   })
 
   window.addEventListener('keyup', (e) => {
-    NewGame.handleKeyPressed(e.key, false)
+    NewGame.directionHandler.handleKeyPressed(e.key, false)
   })
 
 // @ts-ignore
