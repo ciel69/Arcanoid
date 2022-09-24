@@ -1,4 +1,4 @@
-export interface RenderState {
+export default interface RenderState {
   frame: number,
   frameCount: number,
   timeStat: string,

@@ -1,4 +1,4 @@
-export interface Sprites {
+export default interface Sprites {
   [key: string]: HTMLImageElement
   ball:  HTMLImageElement
   bg:  HTMLImageElement

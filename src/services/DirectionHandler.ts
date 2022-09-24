@@ -1,9 +1,9 @@
-import { Platform } from '../game_elements/Platform'
-import { Direction } from '../types/Direction'
-import { Ball } from '../game_elements/Ball'
+import Platform from '../game_elements/Platform'
+import Direction from '../types/Direction'
+import Ball from '../game_elements/Ball'
 import Rules from '../main/game_config'
 import { sound } from '../modules/sound'
-import { GameState } from '../types/GameState'
+import GameState from '../types/GameState'
 
 export default class DirectionHandler {
   private ball: Ball

@@ -2,7 +2,7 @@ import Rules from '../main/game_config'
 import { sound } from '../modules/sound'
 import { GameState } from '../types/GameState'
 
-export class MusicHandler {
+export default class MusicHandler {
   private state: GameState
 
   constructor(state: GameState) {

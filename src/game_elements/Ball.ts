@@ -1,14 +1,15 @@
-import { Brick } from './Brick'
-import { Platform } from './Platform'
-import { BaseGeometry } from '../types/baseGeometry'
-import Rules from '../main/game_config'
-import { sound } from '../modules/sound'
-import { Sprites } from '../types/Sprites'
+import BaseGeometry from '../types/baseGeometry'
+import Brick from './Brick'
+import Platform from './Platform'
+import Sprites from '../types/Sprites'
 
-type Direction = 'x' | 'y' | 'both'
+import rules from '../main/game_config'
+import sound from '../modules/sound'
+
 type BallSpeed = -6 | -4 | -3 | -2 | -1 | 0 | 1 | 2 | 3 | 4 | 6
+type Direction = 'x' | 'y' | 'both'
 
-export class Ball {
+export default class Ball {
   ctx: CanvasRenderingContext2D | null
   sprites: Sprites
 
@@ -109,24 +110,24 @@ export class Ball {
         this.x + this.dx < this.radius ||
         this.x + this.dx > 960 - Math.abs(this.xVelocity) - this.radius
     ) {
-      Rules.sound && sound.wallBounce.play()
+      rules.sound && sound.wallBounce.play()
       x = true
     }
 
     /** Отскок от верхней стенки */
-    if (Rules.godMode) {
+    if (rules.godMode) {
       if (
           this.y + this.dy < this.radius ||
           this.y + this.dy > 600 - Math.abs(this.yVelocity) - this.radius
       ) {
-        Rules.sound && sound.wallBounce.play()
+        rules.sound && sound.wallBounce.play()
         y = true
       }
     } else {
       if (
           this.y + this.dy < this.radius
       ) {
-        Rules.sound && sound.wallBounce.play()
+        rules.sound && sound.wallBounce.play()
         y = true
       }
     }
@@ -187,7 +188,7 @@ export class Ball {
       ) {
         el.visible = false
         isCollide = true
-        Rules.sound && sound.blockBounce.play()
+        rules.sound && sound.blockBounce.play()
         this.bounce(this.getBounceDirection(x, y, el))
       }
     })

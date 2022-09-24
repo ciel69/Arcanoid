@@ -1,6 +1,6 @@
 import { BaseGeometry } from '../types/baseGeometry'
 
-export class Platform implements BaseGeometry{
+export default class Platform implements BaseGeometry{
   width = 96
   height = 16
   velocity = 6

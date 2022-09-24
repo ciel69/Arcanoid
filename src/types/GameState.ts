@@ -1,4 +1,4 @@
-export interface GameState {
+export default interface GameState {
   currentLevel: number,
   showStartMenu: boolean,
   showLevel: boolean,

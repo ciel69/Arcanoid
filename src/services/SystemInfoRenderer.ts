@@ -3,7 +3,7 @@ import { GameState } from '../types/GameState'
 import { RenderState } from '../types/RenderState'
 import Rules from '../main/game_config'
 
-export class SystemInfoRenderer {
+export default class SystemInfoRenderer {
   ctx: CanvasRenderingContext2D | null
   ball: Ball
   gameState: GameState

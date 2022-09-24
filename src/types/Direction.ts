@@ -1,4 +1,4 @@
-export interface Direction {
+export default interface Direction {
   arrowsState: {
     ArrowUp: boolean,
     ArrowLeft: boolean,

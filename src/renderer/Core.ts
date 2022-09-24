@@ -1,19 +1,21 @@
 import ball from '../assets/images/ball.png'
 import brick from '../assets/images/brick.png'
 import platform from '../assets/images/platformG96.png'
-import { Platform } from "../game_elements/Platform"
-import { Sprites } from "../types/Sprites"
-import { Ball } from '../game_elements/Ball'
+
 import levels from '../modules/levels'
-import { Brick } from '../game_elements/Brick'
 import Rules from '../main/game_config'
-import { GameState } from '../types/GameState'
-import { RenderState } from '../types/RenderState'
-import { Direction } from '../types/Direction'
-import { MusicHandler } from '../services/MusicHandler'
-import { SystemInfoRenderer } from '../services/SystemInfoRenderer'
-import ScreenStateRender from '../services/ScreenStateRender'
+
+import Ball from '../game_elements/Ball'
+import Brick from '../game_elements/Brick'
+import Direction from '../types/Direction'
 import DirectionHandler from '../services/DirectionHandler'
+import GameState from '../types/GameState'
+import MusicHandler from '../services/MusicHandler'
+import RenderState from '../types/RenderState'
+import Platform from '../game_elements/Platform'
+import ScreenStateRender from '../services/ScreenStateRender'
+import Sprites from '../types/Sprites'
+import SystemInfoRenderer from '../services/SystemInfoRenderer'
 
 export class Core {
   /** Создаём холст */
@@ -105,7 +107,6 @@ export class Core {
         this.ctx,
         this.sprites,
     )
-
     this.musicHandler = new MusicHandler(this.gameState)
     this.directionHandler = new DirectionHandler(
         this.ball,

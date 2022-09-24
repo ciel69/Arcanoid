@@ -1,7 +1,7 @@
+import blockBounce from '../assets/sound/blockBounce.wav'
 import track1 from '../assets/music/track1.mp3'
 import track2 from '../assets/music/track2.mp3'
 import wallBounce from '../assets/sound/wallBounce.wav'
-import blockBounce from '../assets/sound/blockBounce.wav'
 
 export class Sound {
   sound: HTMLAudioElement
@@ -26,9 +26,11 @@ export class Sound {
 }
 
 /** Звук */
-export const sound = {
+const sound = {
   track1: new Sound(track1, true),
   track2: new Sound(track2, true),
   wallBounce: new Sound(wallBounce),
   blockBounce: new Sound(blockBounce),
 }
+
+export default sound
