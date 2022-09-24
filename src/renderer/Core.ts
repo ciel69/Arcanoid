@@ -1,7 +1,6 @@
 import ball from '../assets/images/ball.png'
 import brick from '../assets/images/brick.png'
 import platform from '../assets/images/platformG96.png'
-
 import { Platform } from "../game_elements/Platform"
 import { Sprites } from "../types/Sprites"
 import { Ball } from '../game_elements/Ball'
@@ -141,7 +140,6 @@ export class Core {
 
   /** Загрузка спрайтов */
   load() {
-    // this.sprites.bg.src = bg
     this.sprites.ball.src = ball
     this.sprites.brick.src = brick
     this.sprites.platform.src = platform
@@ -189,7 +187,6 @@ export class Core {
     }
 
     Rules.systemInfo && this.systemInfoRender.show()
-
     Rules.music && this.musicHandler.on()
   }
 
