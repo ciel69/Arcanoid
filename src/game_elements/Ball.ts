@@ -4,7 +4,8 @@ import Platform from './Platform'
 import Sprites from '../types/Sprites'
 
 import rules from '../main/game_config'
-import sound from '../modules/sound'
+import sound from '../services/Sound'
+import GameState from '../types/GameState'
 
 type BallSpeed = -6 | -4 | -3 | -2 | -1 | 0 | 1 | 2 | 3 | 4 | 6
 type Direction = 'x' | 'y' | 'both'
@@ -12,6 +13,7 @@ type Direction = 'x' | 'y' | 'both'
 export default class Ball {
   ctx: CanvasRenderingContext2D | null
   sprites: Sprites
+  gameState: GameState
 
   x = 0
   y = 0
@@ -25,7 +27,6 @@ export default class Ball {
   collisions = 0
   bricks: Brick[]
   platform: Platform
-  lives: number
   isBallLost = false
   platformCollideDelay = 0
 
@@ -37,18 +38,18 @@ export default class Ball {
       rotateSpeed: number,
       bricks: Brick[],
       platform: Platform,
-      lives: number,
       ctx: CanvasRenderingContext2D | null,
-      sprites: Sprites
+      sprites: Sprites,
+      gameState: GameState,
   ) {
     this.x = x
     this.y = y
     this.rotateSpeed = rotateSpeed
     this.bricks = bricks
     this.platform = platform
-    this.lives = lives
     this.ctx = ctx
     this.sprites = sprites
+    this.gameState = gameState
   }
 
   /** Отдаём угол вращения мяча */
@@ -147,12 +148,15 @@ export default class Ball {
   }
 
   private handleLostBall(): void {
-
     /** Включаем флаг потери мяча */
+    rules.sound && sound.arr.play()
     this.isBallLost = true
-    this.lives -= 1
-    console.log('Осталось жизней: ', this.lives)
+    this.gameState.lives -= 1
 
+    this.resetBall()
+  }
+
+  public resetBall(): void {
     /** Останавливавем шарик */
     this.xVelocity = 0
     this.rotateSpeed = 0
@@ -172,7 +176,6 @@ export default class Ball {
     this.bricks = this.dx > 0 ? this.bricks : this.bricks.reverse()
 
     this.bricks.forEach(el => {
-
       if (!el.visible || isCollide) {
         return
       }
@@ -186,8 +189,12 @@ export default class Ball {
           el.y < y + this.radius && // Заходит за верхнюю часть кирпичика
           el.y + el.height > y - this.radius // Заходит за нижнюю сторону кирпичика
       ) {
+        /** Прячем сбитый кирпичик */
         el.visible = false
+        /** Начисляем очки */
+        this.gameState.score += 10
         isCollide = true
+        /** Проигрываем звук удара */
         rules.sound && sound.blockBounce.play()
         this.bounce(this.getBounceDirection(x, y, el))
       }

@@ -8,23 +8,32 @@ const app = document.getElementById('app');
 app!.innerHTML = `
   <header>
     <h1>
-    <span style="color: red;">a</span>
-    <span style="color: orange;">r</span>
-    <span style="color: yellow;">c</span>
-    <span style="color: green;">a</span>
-    <span style="color: lightblue;">n</span>
-    <span style="color: blue; letter-spacing: -1em"">o</span>
-    <span style="color: purple; letter-spacing: -1em">i</span>
-    <span style="color: red;">d</span>
+    <span>a</span>
+    <span>r</span>
+    <span>c</span>
+    <span>a</span>
+    <span>n</span>
+    <span>o</span>
+    <span>i</span>
+    <span>d</span>
     </h1>
   </header>
   
   <main>
     <div id="gameContainer">
       <canvas style="font-family: 'kongtext', Arial, sans-serif" id="canvas" width="960" height="600"></canvas>
-      <div id="results">
+      <aside id="results">
         <h2>Results</h2>
-      </div>
+        <ul class="game-info__list">
+          <li class="game-info__item"><span>Level: </span><span id="level"></span></li>
+          <li class="game-info__item"><span>Lives: </span><span id="lives"></span></li>
+          <li class="game-info__item"><span>Score: </span><span id="score"></span></li>          
+          <li class="game-info__item"><span>Best score: </span><span id="bestScore"></span></li>          
+        </ul>
+        <div class="message__container">
+          <span id="message"></span>
+        </div>
+      </aside>
     </div>  
   </main>
 `;

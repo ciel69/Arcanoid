@@ -2,20 +2,22 @@ import ball from '../assets/images/ball.png'
 import brick from '../assets/images/brick.png'
 import platform from '../assets/images/platformG96.png'
 
-import levels from '../modules/levels'
-import Rules from '../main/game_config'
+import levels from '../data/levels'
+import rules from '../main/game_config'
 
 import Ball from '../game_elements/Ball'
 import Brick from '../game_elements/Brick'
 import Direction from '../types/Direction'
 import DirectionHandler from '../services/DirectionHandler'
 import GameState from '../types/GameState'
-import MusicHandler from '../services/MusicHandler'
+import Music from '../services/Music'
 import RenderState from '../types/RenderState'
 import Platform from '../game_elements/Platform'
-import ScreenStateRender from '../services/ScreenStateRender'
 import Sprites from '../types/Sprites'
-import SystemInfoRenderer from '../services/SystemInfoRenderer'
+import SystemInfo from '../services/SystemInfo'
+import GameInfo from '../services/GameInfo'
+import messages from '../data/messages'
+import game_config from '../main/game_config'
 
 export class Core {
   /** Создаём холст */
@@ -56,9 +58,14 @@ export class Core {
     showStartMenu: true,
     showLevel: true,
     lives: 0,
+    score: 0,
+    lastScore: 0,
+    bestScore: 0,
     isMusicOn: false,
     isGameOver: false,
     isRestart: false,
+    isLevelChanged: false,
+    message: '',
   }
 
   /** Render state */
@@ -78,9 +85,9 @@ export class Core {
 
   /** Сервисы */
   directionHandler
+  gameInfo
   musicHandler
   systemInfoRender
-  screenStateRender
 
   constructor(
       level: number,
@@ -103,28 +110,87 @@ export class Core {
         0,
         this.bricks,
         this.platform,
-        this.gameState.lives,
         this.ctx,
         this.sprites,
+        this.gameState
     )
-    this.musicHandler = new MusicHandler(this.gameState)
+    this.musicHandler = new Music(this.gameState)
     this.directionHandler = new DirectionHandler(
         this.ball,
         this.gameState,
         this.platform,
         this.direction,
         )
-    this.screenStateRender = new ScreenStateRender(this.ctx)
-    this.systemInfoRender = new SystemInfoRenderer(
+    this.systemInfoRender = new SystemInfo(
         this.ctx,
         this.ball,
         this.gameState,
         this.renderState,
     )
+    this.gameInfo = new GameInfo(this.gameState)
+  }
+
+  /** Отрисовка игрового состояния */
+  render() {
+    this.renderState.frame += 1
+
+    /** Очистка канваса перед отрисовкой нового кадра */
+    this.ctx!.clearRect(0, 0, this.width, this.height)
+    this.gameState.showLevel && this.levelRender()
+
+    if (this.gameState.showStartMenu) {
+      this.shadowScreen()
+      this.gameState.message = messages.start
+    }
+
+    /** Смена уровня */
+    if (!this.gameState.showStartMenu && this.gameState.showLevel) {
+      this.gameState.isLevelChanged = this.checkIsAllBricksInvisible()
+    }
+    if (this.gameState.isLevelChanged) {
+      /** Если уровень можно увеличить на единицу - увеличиваем, */
+      /**  иначе возвращаемся к самому первому */
+      this.gameState.currentLevel =
+          levels[this.gameState.currentLevel + 1]
+              ? this.gameState.currentLevel + 1
+              : 0
+      this.ball.resetBall()
+      this.createLevel(this.gameState.currentLevel)
+      this.gameState.isLevelChanged = false
+    }
+
+    /** Закончились жизни */
+    if (this.gameState.lives === 0 && this.gameState.showLevel && !this.gameState.showStartMenu) {
+      this.shadowScreen()
+      this.gameOverHandler()
+      this.gameState.lastScore = this.gameState.score
+      if (this.gameState.score > this.gameState.bestScore) {
+        this.gameState.bestScore = this.gameState.score
+      }
+    }
+
+    /** Перезапуск игры */
+    if (this.gameState.isRestart) {
+      this.gameState.isRestart = false
+      this.gameState.lives = rules.lives
+      this.gameState.score = 0
+      this.restart()
+    }
+
+    rules.systemInfo && this.systemInfoRender.show()
+    rules.music && this.musicHandler.on()
+
+    this.gameInfo.show()
+  }
+
+  /** Вернёт true, если все кирпичики на уровне невидимы */
+  checkIsAllBricksInvisible(): boolean {
+    return !this.bricks.find(brick => brick.visible)
   }
 
   /** Создание уровня */
   createLevel(level: number): void {
+    this.bricks.length = 0
     levels[level].forEach((row, rowIndex) => {
       row.forEach((el, elIndex) => {
         if (el === 1) {
@@ -153,7 +219,7 @@ export class Core {
   }
 
   restart() {
-    this.createLevel(this.gameState.currentLevel)
+    this.createLevel(game_config.firstLevel)
     this.run()
   }
 
@@ -163,32 +229,6 @@ export class Core {
     this.renderState.then = Date.now()
     this.renderState.startTime = this.renderState.then;
     this.run();
-  }
-
-  render() {
-    this.renderState.frame += 1
-
-    /** Очистка канваса перед отрисовкой нового кадра */
-    this.ctx!.clearRect(0, 0, this.width, this.height)
-    this.gameState.showLevel && this.levelRender()
-
-    if (this.gameState.showStartMenu) {
-      this.shadowScreen()
-      this.screenStateRender.startMenuRender()
-    }
-
-    if (this.ball.lives === 0) {
-      this.shadowScreen()
-      this.gameOverHandler()
-    }
-
-    if (this.gameState.isRestart) {
-      this.gameState.isRestart = false
-      this.restart()
-    }
-
-    Rules.systemInfo && this.systemInfoRender.show()
-    Rules.music && this.musicHandler.on()
   }
 
   update(): void {
@@ -225,7 +265,7 @@ export class Core {
 
   gameOverHandler(): void {
     this.direction.arrowsState.ArrowUp = false
-    this.screenStateRender.gameOverRender()
+    this.gameState.message = messages.gameOver
     this.gameState.showLevel = false
     this.gameState.isGameOver = true
   }

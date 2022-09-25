@@ -2,7 +2,7 @@ import Platform from '../game_elements/Platform'
 import Direction from '../types/Direction'
 import Ball from '../game_elements/Ball'
 import Rules from '../main/game_config'
-import { sound } from '../modules/sound'
+import sound from './Sound'
 import GameState from '../types/GameState'
 
 export default class DirectionHandler {
@@ -106,14 +106,15 @@ export default class DirectionHandler {
   }
 
   public spacePressed(): void {
+    /** Если пробел нажат в главном меню */
     if (this.gameState.showStartMenu) {
       sound.track1.stop()
       this.gameState.isMusicOn = false
       this.gameState.showStartMenu = false
     }
 
+    /** Если пробле нажат, когда игра закончилась */
     if (this.gameState.isGameOver) {
-      this.ball.lives = this.gameState.lives
       this.gameState.isMusicOn = false
       this.gameState.showStartMenu = true
       this.gameState.isGameOver = false

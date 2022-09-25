@@ -1,3 +1,6 @@
+@import "gameInfo.css";
+@import "logo.css";
+
 @font-face {
     font-family: 'kongtext';
     src: local('kongtext'), url('../assets/fonts/kongtext.ttf');
@@ -10,29 +13,12 @@ body {
     font-family: 'kongtext', Arial, sans-serif;
 }
 
-h1 {
-    text-align: center;
-    text-transform: uppercase;
-    font-size: 3em;
-}
-
-h1 > span {
-    letter-spacing: -0.9em;
-}
-
 #gameContainer {
     display: flex;
     justify-content: center;
 }
 
-#results {
-    border: 2px dashed olivedrab;
-    width: 400px;
-}
 
-#results h2 {
-    text-align: center;
-}
 
 #canvas {
     border: 2px dashed blueviolet;

@@ -1,8 +1,8 @@
 import Rules from '../main/game_config'
-import { sound } from '../modules/sound'
-import { GameState } from '../types/GameState'
+import sound from './Sound'
+import GameState from '../types/GameState'
 
-export default class MusicHandler {
+export default class Music {
   private state: GameState
 
   constructor(state: GameState) {

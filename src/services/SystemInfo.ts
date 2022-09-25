@@ -1,9 +1,9 @@
-import { Ball } from '../game_elements/Ball'
-import { GameState } from '../types/GameState'
-import { RenderState } from '../types/RenderState'
+import Ball from '../game_elements/Ball'
+import GameState from '../types/GameState'
+import RenderState from '../types/RenderState'
 import Rules from '../main/game_config'
 
-export default class SystemInfoRenderer {
+export default class SystemInfo {
   ctx: CanvasRenderingContext2D | null
   ball: Ball
   gameState: GameState
@@ -26,7 +26,7 @@ export default class SystemInfoRenderer {
     this.ctx!.fillStyle = 'green'
     this.ctx!.fillText(`ball xVelocity: ${this.ball.xVelocity}`, 10, 20)
     this.ctx!.fillText(`ball yVelocity: ${this.ball.yVelocity}`, 10, 40)
-    this.ctx!.fillText(`lives: ${this.ball.lives}`, 10, 60)
+    this.ctx!.fillText(`lives: ${this.gameState.lives}`, 10, 60)
     this.ctx!.fillText(`level: ${this.gameState.currentLevel}`, 10, 80)
     this.ctx!.fillText(`frames: ${this.renderState.frame}`, 10, 100)
     this.ctx!.fillText(`window.performance.now(): ${window.performance.now()}`, 10, 120)
@@ -35,5 +35,8 @@ export default class SystemInfoRenderer {
     this.ctx!.fillText(`godMode: ${Rules.godMode}`, 10, 180)
     this.ctx!.fillText(`music: ${Rules.music}`, 10, 200)
     this.ctx!.fillText(`sound: ${Rules.sound}`, 10, 220)
+    this.ctx!.fillText(`lastScore: ${this.gameState.lastScore}`, 10, 240)
+    this.ctx!.fillText(`bestScore: ${this.gameState.bestScore}`, 10, 260)
+    this.ctx!.fillText(`score: ${this.gameState.score}`, 10, 280)
   }
 }

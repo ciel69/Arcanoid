@@ -1,4 +1,4 @@
-import { BaseGeometry } from '../types/baseGeometry'
+import BaseGeometry from '../types/baseGeometry'
 
 export default class Brick implements BaseGeometry {
   x: number

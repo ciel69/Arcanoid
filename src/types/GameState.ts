@@ -6,4 +6,9 @@ export default interface GameState {
   isMusicOn: boolean,
   isGameOver: boolean,
   isRestart: boolean,
+  isLevelChanged: boolean,
+  message: string,
+  score: number,
+  lastScore: number,
+  bestScore: number,
 }

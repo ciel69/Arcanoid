@@ -1,3 +1,4 @@
+import arrr from '../assets/sound/arrr.wav'
 import blockBounce from '../assets/sound/blockBounce.wav'
 import track1 from '../assets/music/track1.mp3'
 import track2 from '../assets/music/track2.mp3'
@@ -29,6 +30,8 @@ export class Sound {
 const sound = {
   track1: new Sound(track1, true),
   track2: new Sound(track2, true),
+
+  arr: new Sound(arrr),
   wallBounce: new Sound(wallBounce),
   blockBounce: new Sound(blockBounce),
 }

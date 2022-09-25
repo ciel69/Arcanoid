@@ -1,4 +1,4 @@
-import { BaseGeometry } from '../types/baseGeometry'
+import BaseGeometry from '../types/baseGeometry'
 
 export default class Platform implements BaseGeometry{
   width = 96
