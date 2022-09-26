@@ -4,6 +4,7 @@ export default interface GameState {
   showLevel: boolean,
   lives: number,
   isMusicOn: boolean,
+  isGame: boolean,
   isGameOver: boolean,
   isRestart: boolean,
   isLevelChanged: boolean,

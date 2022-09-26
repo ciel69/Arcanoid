@@ -7,13 +7,13 @@ import wallBounce from '../assets/sound/wallBounce.wav'
 export class Sound {
   sound: HTMLAudioElement
 
-  constructor(src: any, music: boolean = false) {
+  constructor(src: any, loop: boolean = false) {
     this.sound = document.createElement("audio") as HTMLAudioElement;
     this.sound.src = src;
     this.sound.setAttribute("preload", "auto");
     this.sound.setAttribute("controls", "none");
     this.sound.style.display = "none";
-    this.sound.loop = music
+    this.sound.loop = loop
     document.body.appendChild(this.sound);
   }
 

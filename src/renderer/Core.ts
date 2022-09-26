@@ -52,7 +52,7 @@ export class Core {
   platform: Platform
   ball: Ball
 
-  /** Состояние */
+  /** Игровое состояние */
   gameState: GameState = {
     currentLevel: 0,
     showStartMenu: true,
@@ -63,6 +63,7 @@ export class Core {
     bestScore: 0,
     isMusicOn: false,
     isGameOver: false,
+    isGame: false,
     isRestart: false,
     isLevelChanged: false,
     message: '',
@@ -143,6 +144,14 @@ export class Core {
       this.gameState.message = messages.start
     }
 
+    if (this.gameState.isGame) {
+      this.gameState.message = messages.game
+    }
+
+    if (!game_config.music) {
+      this.musicHandler.off()
+    }
+
     /** Смена уровня */
     if (!this.gameState.showStartMenu && this.gameState.showLevel) {
       this.gameState.isLevelChanged = this.checkIsAllBricksInvisible()
@@ -212,18 +221,20 @@ export class Core {
     this.sprites.platform.src = platform
   }
 
+  /** Первый запуск, загружаем элементы и запускаем анимацию */
   start() {
     this.load()
     this.createLevel(this.gameState.currentLevel)
     this.startAnimating(this.renderState.fps)
   }
 
+  /** Запуск новой игры */
   restart() {
     this.createLevel(game_config.firstLevel)
     this.run()
   }
 
-
+  /** Запуск анимации с установокой заданного fps */
   startAnimating(fps: number): void {
     this.renderState.fpsInterval = 1000 / fps;
     this.renderState.then = Date.now()
@@ -231,15 +242,10 @@ export class Core {
     this.run();
   }
 
-  update(): void {
-    if (this.ball.isFlying
-    ) {
-      this.ball.fly()
-    }
-  }
-
   run(): void {
-    /** Перерисовка канваса */
+    /** Перерисовка канваса.
+     * Тут много магии, цель которой зафиксировать фпс,
+     * чтобы темп игры не зависел от скорости работы браузера */
     window.requestAnimationFrame(() => this.run());
 
     this.renderState.now = Date.now()
@@ -249,7 +255,7 @@ export class Core {
       this.renderState.then = this.renderState.now - (this.renderState.elapsed % this.renderState.fpsInterval)
 
       this.directionHandler.control()
-      this.update()
+      this.ball.isFlying && this.ball.fly()
       this.render()
 
       this.renderState.sinceStart = this.renderState.now - this.renderState.startTime;
@@ -258,6 +264,7 @@ export class Core {
     }
   }
 
+  /** Эффект затемнения экрана */
   shadowScreen(): void {
     this.ctx!.fillStyle = "rgba(0, 0, 0, 0.8)";
     this.ctx!.fillRect(0, 0, this.width, this.height)
@@ -267,6 +274,7 @@ export class Core {
     this.direction.arrowsState.ArrowUp = false
     this.gameState.message = messages.gameOver
     this.gameState.showLevel = false
+    this.gameState.isGame = false
     this.gameState.isGameOver = true
   }
 

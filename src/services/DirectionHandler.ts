@@ -4,6 +4,7 @@ import Ball from '../game_elements/Ball'
 import Rules from '../main/game_config'
 import sound from './Sound'
 import GameState from '../types/GameState'
+import game_config from '../main/game_config'
 
 export default class DirectionHandler {
   private ball: Ball
@@ -59,7 +60,16 @@ export default class DirectionHandler {
 
   /** Обработка нажатий на клавиатуру */
   public handleKeyPressed(key: string, status: boolean): void {
+    /** "Медленные нажатия, с задержкой" */
     if (key === ' ') {
+      this.keyWithDelayPressed(key)
+    }
+
+    if (key === 'i') {
+      this.keyWithDelayPressed(key)
+    }
+
+    if (key === 'g') {
       this.keyWithDelayPressed(key)
     }
 
@@ -67,6 +77,11 @@ export default class DirectionHandler {
       this.keyWithDelayPressed(key)
     }
 
+    if (key === 'm') {
+      this.keyWithDelayPressed(key)
+    }
+
+    /** Нажатия без задержки - для управления платформой */
     if (!this.gameState.showStartMenu && !this.gameState.isGameOver) {
       if (key === 'ArrowUp') {
         /** Если шарик в полёте - блокируем стрелку вверх */
@@ -83,19 +98,31 @@ export default class DirectionHandler {
     }
   }
 
+  /** Обработка нажатия на клавиши с задержкой */
   public keyWithDelayPressed(key: string): void {
+    /** Задаём задержку */
     if (!this.direction.keyDelayStatus.delayInProgress[key] && !this.direction.keyDelayStatus.keyDelay[key]) {
       this.direction.keyDelayStatus.delayInProgress[key] = true
       setTimeout(() => {
         this.direction.keyDelayStatus.delayInProgress[key] = false
         this.direction.keyDelayStatus.keyDelay[key] = false
-      }, 400)
+      }, game_config.keyPressDelay)
     }
 
+    /** Обработка нажатия на конкретные клавиши */
     if (!this.direction.keyDelayStatus.keyDelay[key]) {
       switch (key) {
-        case ('s'):
+        case ('i'):
           Rules.systemInfo = !Rules.systemInfo;
+          break
+        case ('g'):
+          Rules.godMode = !Rules.godMode;
+          break
+        case ('s'):
+          Rules.sound = !Rules.sound;
+          break
+        case ('m'):
+          Rules.music = !Rules.music;
           break
         case (' '):
           this.spacePressed();
@@ -110,6 +137,7 @@ export default class DirectionHandler {
     if (this.gameState.showStartMenu) {
       sound.track1.stop()
       this.gameState.isMusicOn = false
+      this.gameState.isGame = true
       this.gameState.showStartMenu = false
     }
 

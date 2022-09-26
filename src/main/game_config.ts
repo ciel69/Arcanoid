@@ -5,6 +5,7 @@ const game_config = {
   music: false,
   sound: true,
   systemInfo: false,
+  keyPressDelay: 400,
 }
 
 export default game_config

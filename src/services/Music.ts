@@ -17,4 +17,11 @@ export default class Music {
 
     this.state.isMusicOn = true
   }
+
+  off(): void {
+    sound.track1.stop()
+    sound.track2.stop()
+
+    this.state.isMusicOn = false
+  }
 }
