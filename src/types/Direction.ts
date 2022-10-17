@@ -1,4 +1,4 @@
-export default interface Direction {
+export interface Direction {
   arrowsState: {
     ArrowUp: boolean,
     ArrowLeft: boolean,
@@ -19,4 +19,9 @@ interface KeyDelayStatus {
     s: boolean,
     ' ': boolean,
   },
+}
+
+export interface EventControl {
+  source: KeyboardEvent
+  isDown: boolean
 }

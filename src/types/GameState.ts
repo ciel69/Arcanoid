@@ -1,3 +1,5 @@
+import {BallInterface} from './ball.interface';
+
 export default interface GameState {
   currentLevel: number,
   showStartMenu: boolean,
@@ -12,4 +14,5 @@ export default interface GameState {
   score: number,
   lastScore: number,
   bestScore: number,
+  ball?: BallInterface
 }

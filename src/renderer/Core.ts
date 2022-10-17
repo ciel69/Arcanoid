@@ -3,21 +3,24 @@ import brick from '../assets/images/brick.png'
 import platform from '../assets/images/platformG96.png'
 
 import levels from '../data/levels'
+import messages from '../data/messages'
+
 import rules from '../main/game_config'
+import game_config from '../main/game_config'
 
 import Ball from '../game_elements/Ball'
 import Brick from '../game_elements/Brick'
-import Direction from '../types/Direction'
-import DirectionHandler from '../services/DirectionHandler'
-import GameState from '../types/GameState'
-import Music from '../services/Music'
-import RenderState from '../types/RenderState'
 import Platform from '../game_elements/Platform'
+
+import {Direction} from '../types/Direction'
+import GameState from '../types/GameState'
+import RenderState from '../types/RenderState'
 import Sprites from '../types/Sprites'
+
+import DirectionHandler from '../services/DirectionHandler'
+import Music from '../services/Music'
 import SystemInfo from '../services/SystemInfo'
 import GameInfo from '../services/GameInfo'
-import messages from '../data/messages'
-import game_config from '../main/game_config'
 
 export class Core {
   /** Создаём холст */
@@ -271,7 +274,7 @@ export class Core {
   }
 
   gameOverHandler(): void {
-    this.direction.arrowsState.ArrowUp = false
+    // this.direction.arrowsState.ArrowUp = false
     this.gameState.message = messages.gameOver
     this.gameState.showLevel = false
     this.gameState.isGame = false

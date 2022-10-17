@@ -6,11 +6,12 @@ import Sprites from '../types/Sprites'
 import rules from '../main/game_config'
 import sound from '../services/Sound'
 import GameState from '../types/GameState'
+import {BallInterface} from '../types/ball.interface';
 
 type BallSpeed = -6 | -4 | -3 | -2 | -1 | 0 | 1 | 2 | 3 | 4 | 6
 type Direction = 'x' | 'y' | 'both'
 
-export default class Ball {
+export default class Ball implements BallInterface {
   ctx: CanvasRenderingContext2D | null
   sprites: Sprites
   gameState: GameState

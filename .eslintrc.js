@@ -14,6 +14,7 @@ module.exports = {
         __static: true
     },
     rules: {
-        "no-debugger": "off"
+        "no-debugger": "off",
+        "no-unused-vars": "off"
     }
 }
