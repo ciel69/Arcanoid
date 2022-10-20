@@ -13,6 +13,9 @@ export class Game {
     arrows: {
       left: false,
       right: false,
+    },
+    ball: {
+      isFlying: false
     }
   }
 
@@ -27,17 +30,21 @@ export class Game {
   init(): void {
     this.handleEvents()
     const center = this.view.getWidth() / 2
-    this.addBall((center - 6), this.view.getHeight() - 44)
-    this.addPlatform((center - 45), this.view.getHeight() - 20)
+    const ball = this.addBall(center, this.view.getHeight() - 44)
+    const platform = this.addPlatform(center, this.view.getHeight() - 20)
+
+    const rotatePlatform = this.view.rotateElement(platform, -3)
+    const rotateBall = this.view.rotateElement(ball, 2)
 
     const gameElements = this.elementService.getElements()
-
     this.view.ticker$.subscribe(() => {
 
-      // this.moveBall()
+      this.moveBall()
       this.movePlatform()
 
       this.view.addChildren(gameElements)
+      rotateBall()
+      rotatePlatform()
     })
   }
 
@@ -68,10 +75,10 @@ export class Game {
   addBall(x: number = 0, y: number = 0) {
     const ball = this.elementService.createElement('ball', ballImage)
     ball.setVelocity(3)
+    ball.width = 24
+    ball.height = 24
     ball.x = x
     ball.y = y
-    ball.width = 12
-    ball.height = 12
     return ball
   }
 
@@ -95,6 +102,10 @@ export class Game {
    */
   moveBall() {
     const ball = this.elementService.getElement('ball')!
+    if (!this.state.ball.isFlying) {
+      return
+    }
+
     if (ball.x <= this.view.getWidth()) {
       ball.move(1)
     } else if (ball.x >= 0) {
@@ -108,11 +119,12 @@ export class Game {
   movePlatform() {
     const platform = this.elementService.getElement('platform')!
     const ball = this.elementService.getElement('ball')!
-    if (this.state.arrows.right && platform.x + platform.xVelocity <= (this.view.getWidth() - platform.width!)) {
+    const halfWidth = platform.width! / 2
+    if (this.state.arrows.right && platform.x + platform.xVelocity <= (this.view.getWidth() - halfWidth)) {
       platform.move(1)
       ball.move(1)
     }
-    if (this.state.arrows.left && platform.x - platform.xVelocity >= 0) {
+    if (this.state.arrows.left && platform.x - platform.xVelocity >= halfWidth) {
       platform.move(-1)
       ball.move(-1)
     }

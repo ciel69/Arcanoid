@@ -7,6 +7,7 @@ export default class BasicElement implements BasicElementInterface {
   height?: number = 0
   xVelocity: number = 0
   yVelocity: number = 0
+  isRotate: boolean = false
   texture: HTMLImageElement
 
 

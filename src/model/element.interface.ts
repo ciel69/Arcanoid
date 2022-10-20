@@ -12,6 +12,7 @@ export interface BasicElementInterface {
   height?: number
   xVelocity: number
   yVelocity: number
+  isRotate: boolean
   texture: HTMLImageElement
 
   setVelocity<T>(xVelocity: number): T

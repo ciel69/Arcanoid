@@ -12,12 +12,7 @@ interface ParamsCanvas {
 export default class CanvasView implements ViewInterface {
 
   ticker$ = new BehaviorSubject<number>(0).pipe(tap(() => {
-    // console.log('tap', this.width);
-    // this.ctx!.translate(10, 10)
-    // this.ctx!.save()
-    // this.ctx!.translate(testX, testY)
     this.ctx!.clearRect(0, 0, this.width, this.height)
-    // this.ctx!.restore()
   })) as BehaviorSubject<number>
 
   private canvas = document.getElementById('canvas') as HTMLCanvasElement
@@ -75,19 +70,37 @@ export default class CanvasView implements ViewInterface {
   }
 
   addChild(image: BasicElementInterface): void {
-    image.texture.onload = () => {
-      this.ctx!.drawImage(image.texture, image.x, image.y)
-    }
-    this.ctx!.drawImage(image.texture, image.x, image.y)
+    if (image.isRotate) return
+    this.ctx!.drawImage(image.texture, (image.x - image.width! / 2), (image.y - image.height!/2), image.width!, image.height!)
   }
 
   addChildren(images: BasicElementInterface[]): void {
     images.forEach(image => {
-      image.texture.onload = () => {
-        this.ctx!.drawImage(image.texture, image.x, image.y)
-      }
-      this.ctx!.drawImage(image.texture, image.x, image.y)
+      this.addChild(image)
     })
+  }
+
+  rotateElement(element: BasicElementInterface, rotateSpeed: number) {
+    element.isRotate = true
+    let _ballAngle = 0
+    return () => {
+      _ballAngle += rotateSpeed
+      if (_ballAngle === 360) {
+        _ballAngle = 0
+      }
+      this.rotateAndPaintImage(element.texture, +(_ballAngle * Math.PI / 180), element.x, element.y, element.width!, element.height!)
+    }
+  }
+
+  rotateAndPaintImage(image: HTMLImageElement, angle: number, x: number, y: number, width: number, height: number) {
+    // const x = this.getWidth() / 2
+    // const y = this.getHeight() / 2
+    this.ctx!.save()
+    this.ctx!.translate(x, y)
+    this.ctx!.rotate(angle)
+    this.ctx!.drawImage(image, -width/2, -height/2, width, height)
+    this.ctx!.translate(-x, -y)
+    this.ctx!.restore()
   }
 
 }

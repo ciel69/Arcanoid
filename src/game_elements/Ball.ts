@@ -272,8 +272,8 @@ export default class Ball implements BallInterface {
     this.ctx!.translate(this.x, this.y)
     this.ctx!.rotate(this.ballAngle)
     this.ctx!.drawImage(this.sprites.ball, -this.radius, -this.radius)
-    // this.ctx!.rotate(-this.ballAngle)
-    // this.ctx!.translate(-this.x, -this.y)
+    this.ctx!.rotate(-this.ballAngle)
+    this.ctx!.translate(-this.x, -this.y)
     this.ctx!.restore()
   }
 }

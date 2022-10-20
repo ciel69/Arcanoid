@@ -11,4 +11,6 @@ export interface ViewInterface  {
   set?(x: number, y: number): void
   addChild(image: BasicElementInterface): void
   addChildren(images: BasicElementInterface[]): void
+  rotateElement(element: BasicElementInterface, rotateSpeed: number): Function
+  rotateAndPaintImage(image: HTMLImageElement, angleInRad: number, positionX: number, positionY: number, axisX: number, axisY: number): void
 }
