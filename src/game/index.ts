@@ -27,14 +27,14 @@ export class Game {
   init(): void {
     this.handleEvents()
     const center = this.view.getWidth() / 2
-    this.addBall()
-    this.addPlatform(center, this.view.getHeight() - 20)
+    this.addBall((center - 6), this.view.getHeight() - 44)
+    this.addPlatform((center - 45), this.view.getHeight() - 20)
 
     const gameElements = this.elementService.getElements()
 
     this.view.ticker$.subscribe(() => {
 
-      this.moveBall()
+      // this.moveBall()
       this.movePlatform()
 
       this.view.addChildren(gameElements)
@@ -67,9 +67,11 @@ export class Game {
    */
   addBall(x: number = 0, y: number = 0) {
     const ball = this.elementService.createElement('ball', ballImage)
-    ball.setVelocity(1)
+    ball.setVelocity(3)
     ball.x = x
     ball.y = y
+    ball.width = 12
+    ball.height = 12
     return ball
   }
 
@@ -94,7 +96,7 @@ export class Game {
   moveBall() {
     const ball = this.elementService.getElement('ball')!
     if (ball.x <= this.view.getWidth()) {
-      ball.move(1, 1)
+      ball.move(1)
     } else if (ball.x >= 0) {
       ball.move(-1)
     }
@@ -105,11 +107,14 @@ export class Game {
    */
   movePlatform() {
     const platform = this.elementService.getElement('platform')!
+    const ball = this.elementService.getElement('ball')!
     if (this.state.arrows.right && platform.x + platform.xVelocity <= (this.view.getWidth() - platform.width!)) {
       platform.move(1)
+      ball.move(1)
     }
     if (this.state.arrows.left && platform.x - platform.xVelocity >= 0) {
       platform.move(-1)
+      ball.move(-1)
     }
   }
 
