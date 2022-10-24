@@ -22,7 +22,7 @@ app!.innerHTML = `
   
   <main>
     <div id="gameContainer">
-      <canvas style="font-family: 'kongtext', Arial, sans-serif" id="canvas"></canvas>
+      <canvas style="font-family: 'kongtext', Arial, sans-serif" id="canvas" width="960" height="600"></canvas>
       <aside id="results">
         <h2>Results</h2>
         <ul class="game-info__list">

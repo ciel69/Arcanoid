@@ -106,7 +106,6 @@ export default class Ball implements BallInterface {
     let x = false
     let y = false
 
-
     /** Отскок от левой или правой стенки */
     if (
         this.x + this.dx < this.radius ||

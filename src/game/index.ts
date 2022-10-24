@@ -1,133 +1,116 @@
 import {ControlInterface} from '../model/control.interface'
 import {ViewInterface} from '../model/view.interface'
 import {ElementInterface} from '../model/element.interface'
+import {ArrowState, BallState, StateInterface} from '../model/state.interface'
 
 import {filterByKey} from '../utils'
 
-import ballImage from '../assets/images/ball.png'
-import platformImage from '../assets/images/platformG96.png'
+import BallService from './ball.service'
+import PlatformService from './platform.service'
 
-export class Game {
+export interface IGame {
+  init(): void
+}
 
-  state = {
-    arrows: {
-      left: false,
-      right: false,
-    },
-    ball: {
-      isFlying: false
-    }
-  }
+export class Game implements IGame {
+
+  ballService: BallService
+  platformService: PlatformService
 
   constructor(
     private directionHandler: ControlInterface,
     private view: ViewInterface,
     private elementService: ElementInterface,
+    private state: StateInterface,
   ) {
+
+    // Конфигурируем холст
+    view.configure(
+      {
+        idContainer: 'canvas',
+        width: 960,
+        height: 600
+      })
+
+    this.ballService = new BallService(
+      view,
+      elementService
+    )
+    this.platformService = new PlatformService(
+      view,
+      elementService,
+      state
+    )
+
+    state.create('arrows', {
+      left: false,
+      right: false,
+    })
+    state.create('ball', {
+      isFlying: false
+    })
+
     this.init()
   }
 
   init(): void {
     this.handleEvents()
     const center = this.view.getWidth() / 2
-    const ball = this.addBall(center, this.view.getHeight() - 44)
-    const platform = this.addPlatform(center, this.view.getHeight() - 20)
-
-    const rotatePlatform = this.view.rotateElement(platform, -3)
-    const rotateBall = this.view.rotateElement(ball, 2)
+    this.ballService.create(center, this.view.getHeight() - 41)
+    this.platformService.create(center, this.view.getHeight() - 20)
 
     const gameElements = this.elementService.getElements()
     this.view.ticker$.subscribe(() => {
 
-      this.moveBall()
-      this.movePlatform()
+      this.state.get<BallState>('ball').isFlying && this.ballService.fly()
+      this.platformService.handleMove()
 
       this.view.addChildren(gameElements)
-      rotateBall()
-      rotatePlatform()
     })
   }
 
   /**
    * Подписки на события (в текущей реализации только клавиатуры)
    */
-  handleEvents() {
+  handleEvents(): void {
     this.directionHandler.handle$
       .pipe(filterByKey(['s', 'w']))
       .subscribe((res) => {
         console.log('handle$', res)
       })
+    this.directionHandler.handle$
+      .pipe(filterByKey(' '))
+      .subscribe((res) => {
+        if (res.isDown) {
+          this.state.update<BallState>('ball', 'isFlying', true)
+        }
+      })
 
     this.directionHandler.arrowLeft$.subscribe((isDown) => {
-      this.state.arrows.left = isDown
+      this.state.update<ArrowState>('arrows', 'left', isDown)
     })
 
     this.directionHandler.arrowRight$.subscribe((isDown) => {
-      this.state.arrows.right = isDown
+      this.state.update<ArrowState>('arrows', 'right', isDown)
     })
-  }
-
-  /**
-   * Создаём мячик
-   * @param x
-   * @param y
-   */
-  addBall(x: number = 0, y: number = 0) {
-    const ball = this.elementService.createElement('ball', ballImage)
-    ball.setVelocity(3)
-    ball.width = 24
-    ball.height = 24
-    ball.x = x
-    ball.y = y
-    return ball
-  }
-
-  /**
-   * Создаём платформу
-   * @param x
-   * @param y
-   */
-  addPlatform(x: number = 0, y: number = 0) {
-    const platform = this.elementService.createElement('platform', platformImage)
-    platform.setVelocity(3)
-    platform.x = x
-    platform.y = y
-    platform.width = 96
-    platform.height = 16
-    return platform
   }
 
   /**
    * Перемещение мячика по холсту
    */
-  moveBall() {
+  moveBall(): void {
+    const stateBall = this.state.get<BallState>('ball')
     const ball = this.elementService.getElement('ball')!
-    if (!this.state.ball.isFlying) {
+    if (!stateBall.isFlying) {
       return
     }
+    ball.rotate && ball.rotate()
 
-    if (ball.x <= this.view.getWidth()) {
-      ball.move(1)
-    } else if (ball.x >= 0) {
-      ball.move(-1)
-    }
-  }
-
-  /**
-   * Логика передвижения платформы с коллизией на края холста
-   */
-  movePlatform() {
-    const platform = this.elementService.getElement('platform')!
-    const ball = this.elementService.getElement('ball')!
-    const halfWidth = platform.width! / 2
-    if (this.state.arrows.right && platform.x + platform.xVelocity <= (this.view.getWidth() - halfWidth)) {
-      platform.move(1)
-      ball.move(1)
-    }
-    if (this.state.arrows.left && platform.x - platform.xVelocity >= halfWidth) {
-      platform.move(-1)
-      ball.move(-1)
-    }
+    // if (ball.x <= this.view.getWidth()) {
+    //   ball.move(1)
+    // } else if (ball.x >= 0) {
+    //   ball.move(-1)
+    // }
   }
 
 }

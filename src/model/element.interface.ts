@@ -15,6 +15,8 @@ export interface BasicElementInterface {
   isRotate: boolean
   texture: HTMLImageElement
 
+  rotate?: Function | null
+
   setVelocity<T>(xVelocity: number): T
   setVelocity<T>(xVelocity: number, yVelocity: number): T
 

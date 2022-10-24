@@ -1,9 +1,18 @@
 import {BehaviorSubject} from 'rxjs';
 import {BasicElementInterface} from './element.interface';
 
+
+export interface ParamsCanvas {
+  idContainer: string
+  width: number
+  height: number
+}
+
 export interface ViewInterface  {
 
   ticker$: BehaviorSubject<number>;
+
+  configure(params: ParamsCanvas): void
 
   getWidth(): number
   getHeight(): number

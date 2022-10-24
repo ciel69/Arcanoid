@@ -1,13 +1,8 @@
 import {BehaviorSubject, tap} from 'rxjs';
 
-import {ViewInterface} from '../model/view.interface';
+import {ParamsCanvas, ViewInterface} from '../model/view.interface';
 import {BasicElementInterface} from '../model/element.interface';
 
-interface ParamsCanvas {
-  idContainer: string
-  width: number
-  height: number
-}
 
 export default class CanvasView implements ViewInterface {
 
@@ -16,15 +11,18 @@ export default class CanvasView implements ViewInterface {
   })) as BehaviorSubject<number>
 
   private canvas = document.getElementById('canvas') as HTMLCanvasElement
-  private readonly ctx: CanvasRenderingContext2D | null
+  private ctx: CanvasRenderingContext2D | null | undefined
 
   private width!: number
   private height!: number
-  readonly idContainer: string
+  protected idContainer: string = ''
   private previousTimeStamp: number = 0
   private startAnimated: number = 0
 
-  constructor(data: ParamsCanvas) {
+  constructor() {
+  }
+
+  configure(data: ParamsCanvas): void {
     this.ctx = this.canvas.getContext('2d')
     this.idContainer = data.idContainer
     this.setWidth(data.width)
@@ -81,9 +79,9 @@ export default class CanvasView implements ViewInterface {
   }
 
   rotateElement(element: BasicElementInterface, rotateSpeed: number) {
-    element.isRotate = true
     let _ballAngle = 0
     return () => {
+      element.isRotate = true
       _ballAngle += rotateSpeed
       if (_ballAngle === 360) {
         _ballAngle = 0
@@ -93,8 +91,6 @@ export default class CanvasView implements ViewInterface {
   }
 
   rotateAndPaintImage(image: HTMLImageElement, angle: number, x: number, y: number, width: number, height: number) {
-    // const x = this.getWidth() / 2
-    // const y = this.getHeight() / 2
     this.ctx!.save()
     this.ctx!.translate(x, y)
     this.ctx!.rotate(angle)
