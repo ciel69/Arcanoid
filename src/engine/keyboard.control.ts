@@ -1,8 +1,7 @@
 import {BehaviorSubject, fromEvent} from 'rxjs';
 
-import {EventControl} from '../types/Direction';
 import {createValueControl, filterByKey} from '../utils';
-import {CallbackFn, ControlInterface} from '../model/control.interface';
+import {CallbackFn, ControlInterface, EventControl} from '../model/control.interface';
 
 /**
  * Класс инкапсулирует логику подписки нажатия на различные клавиши клавиатуры
@@ -23,13 +22,13 @@ import {CallbackFn, ControlInterface} from '../model/control.interface';
  */
 export default class KeyboardControl implements ControlInterface {
 
-  handle$ = new BehaviorSubject<EventControl>(createValueControl());
+  private handle$ = new BehaviorSubject<EventControl>(createValueControl());
 
-  arrowLeft$ = new BehaviorSubject<boolean>(false);
+  private arrowLeft$ = new BehaviorSubject<boolean>(false);
 
-  arrowRight$ = new BehaviorSubject<boolean>(false);
+  private arrowRight$ = new BehaviorSubject<boolean>(false);
 
-  arrowUp$ = new BehaviorSubject<boolean>(false);
+  private arrowUp$ = new BehaviorSubject<boolean>(false);
 
   constructor() {
     /**
@@ -77,7 +76,6 @@ export default class KeyboardControl implements ControlInterface {
   arrowUp(fn: CallbackFn<boolean>): void {
     this.arrowUp$.subscribe(res => fn(res))
   }
-
 
   handle(key: string|string[], fn: (data: EventControl) => void): void {
     this.handle$

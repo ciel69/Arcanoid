@@ -3,10 +3,7 @@ import {BehaviorSubject, filter} from 'rxjs';
 import {StateInterface} from '../model/state.interface';
 
 export default class State implements StateInterface {
-    private _state$ =  new BehaviorSubject<number>(0)
-    changeState$ =  new BehaviorSubject<string>('')
-
-    readonly state$ = this._state$.asObservable()
+    private changeState$ =  new BehaviorSubject<string>('')
 
     state: any = {}
 
@@ -21,7 +18,15 @@ export default class State implements StateInterface {
         return {...this.state[key]}
     }
 
-    update<T>(key: string, field: keyof T, value: any) {
+    update<T>(key: string, value: T): void {
+        this.state[key] = {
+            ...this.state[key],
+            ...value
+        }
+        this.changeState$.next(key)
+    }
+
+    updateByField<T>(key: string, field: keyof T, value: any) {
         this.state[key] = {
             ...this.state[key],
             [field]: value

@@ -1,5 +1,6 @@
 import { filter } from 'rxjs';
-import {EventControl} from "../types/Direction";
+
+import {EventControl} from '../model/control.interface';
 
 export const filterByKey = (keys: string|string[]) => {
     if (!Array.isArray(keys)) {

@@ -3,9 +3,7 @@ import {ViewInterface} from '../model/view.interface'
 import {BallInterface, BrickInterface, ElementInterface, PlatformInterface} from '../model/element.interface'
 import {ArrowState, BallState, StateInterface} from '../model/state.interface'
 import {RulesInterface} from '../model/rules.interface';
-
-import GameState from '../model/GameState'
-import {GameInterface} from '../model/game.interface'
+import {GameInterface, GameState} from '../model/game.interface'
 
 import levels from '../data/levels'
 import messages from '../data/messages'
@@ -123,8 +121,8 @@ export class Game implements IGame {
   nextLevel(): void {
     const gameState = this.state.get<GameState>('gameState')
     const localLevel = gameState.currentLevel + 1
-    this.state.update<BallState>('ball', 'isFlying', false)
-    this.state.update<GameState>('gameState', 'currentLevel', localLevel)
+    this.state.updateByField<BallState>('ball', 'isFlying', false)
+    this.state.updateByField<GameState>('gameState', 'currentLevel', localLevel)
     this.ballService.resetAll()
     this.createLevel(localLevel)
   }
@@ -136,37 +134,43 @@ export class Game implements IGame {
     this.directionHandler.handle(' ', (res) => {
       if (res.isDown) {
         const gameState = this.state.get<GameState>('gameState')
+        let state = {
+          message: messages.game,
+          showStartMenu: false,
+          isGame: true,
+        } as GameState
         if (gameState.isGameOver) {
           this.createLevel(gameState.currentLevel)
-          this.state.update<GameState>('gameState', 'isGameOver', false)
-          this.state.update<GameState>('gameState', 'lives', 3)
-          this.state.update<GameState>('gameState', 'score', 0)
+          state = {
+            ...state,
+            isGameOver: false,
+            lives: 3,
+            score: 0,
+          }
         }
-        this.state.update<GameState>('gameState', 'message', messages.game)
-        this.state.update<GameState>('gameState', 'showStartMenu', false)
-        this.state.update<GameState>('gameState', 'isGame', true)
+        this.state.update<GameState>('gameState', state)
       }
     })
 
     this.directionHandler.handle('g', (res) => {
       if (res.isDown) {
-        this.state.update<RulesInterface>('rules', 'godMode', !this.state.get<RulesInterface>('rules').godMode)
+        this.state.updateByField<RulesInterface>('rules', 'godMode', !this.state.get<RulesInterface>('rules').godMode)
       }
     })
 
     this.directionHandler.arrowUp((isDown) => {
       const gameState = this.state.get<GameState>('gameState')
       if (isDown && !gameState.showStartMenu) {
-        this.state.update<BallState>('ball', 'isFlying', true)
+        this.state.updateByField<BallState>('ball', 'isFlying', true)
       }
     })
 
     this.directionHandler.arrowLeft((isDown) => {
-      this.state.update<ArrowState>('arrows', 'left', isDown)
+      this.state.updateByField<ArrowState>('arrows', 'left', isDown)
     })
 
     this.directionHandler.arrowRight((isDown) => {
-      this.state.update<ArrowState>('arrows', 'right', isDown)
+      this.state.updateByField<ArrowState>('arrows', 'right', isDown)
     })
   }
 
@@ -176,14 +180,19 @@ export class Game implements IGame {
 
   gameOverHandler(): void {
     const gameState = this.state.get<GameState>('gameState')
-    this.state.update<GameState>('gameState', 'message', messages.gameOver)
-    this.state.update<GameState>('gameState', 'showLevel', false)
-    this.state.update<GameState>('gameState', 'isGame', false)
-    this.state.update<GameState>('gameState', 'showStartMenu', false)
-    this.state.update<GameState>('gameState', 'isGameOver', true)
+    const state = {
+      message: messages.gameOver,
+      showLevel: false,
+      isGame: false,
+      showStartMenu: false,
+      isGameOver: true,
+    } as GameState
+
     if (gameState.bestScore < gameState.score) {
-      this.state.update<GameState>('gameState', 'bestScore', gameState.score)
+      state.bestScore = gameState.score
     }
+
+    this.state.update<GameState>('gameState', state)
 
     this.shadowScreen()
   }

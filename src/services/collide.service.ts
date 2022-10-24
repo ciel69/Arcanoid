@@ -1,9 +1,9 @@
 import {CollideInterface, Velocity} from '../model/collide.interface';
 import {BallInterface, BasicElementInterface, BrickInterface, ElementInterface} from '../model/element.interface';
 import {ViewInterface} from '../model/view.interface';
-import {BallState, StateInterface} from "../model/state.interface";
-import GameState from '../model/GameState';
-import {RulesInterface} from "../model/rules.interface";
+import {BallState, StateInterface} from '../model/state.interface';
+import {RulesInterface} from '../model/rules.interface';
+import {GameState} from '../model/game.interface';
 
 export default class CollideService implements CollideInterface {
 
@@ -49,8 +49,8 @@ export default class CollideService implements CollideInterface {
       ball.destroyed = true
       const gameState = this.state.get<GameState>('gameState')
       if (gameState.lives > 0) {
-        this.state.update<GameState>('gameState', 'lives', --gameState.lives)
-        this.state.update<BallState>('ball', 'isFlying', false)
+        this.state.updateByField<GameState>('gameState', 'lives', --gameState.lives)
+        this.state.updateByField<BallState>('ball', 'isFlying', false)
         this.ballService.reset(ball)
       }
     }
@@ -102,7 +102,7 @@ export default class CollideService implements CollideInterface {
         el.y + el.height! > y - radius // Заходит за нижнюю сторону кирпичика
       ) {
         const score = this.state.get<GameState>('gameState').score + 10
-        this.state.update<GameState>('gameState', 'score',  score)
+        this.state.updateByField<GameState>('gameState', 'score',  score)
         /** Прячем сбитый кирпичик */
         el.destroyed = true
 

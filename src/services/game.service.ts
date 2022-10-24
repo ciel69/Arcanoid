@@ -1,5 +1,4 @@
-import GameState from '../model/GameState'
-import {GameInterface} from '../model/game.interface';
+import {GameInterface, GameState} from '../model/game.interface';
 
 export default class GameService implements GameInterface {
 
