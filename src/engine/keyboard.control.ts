@@ -1,8 +1,8 @@
 import {BehaviorSubject, fromEvent} from 'rxjs';
 
 import {EventControl} from '../types/Direction';
-import {createValueControl} from '../utils';
-import {ControlInterface} from '../model/control.interface';
+import {createValueControl, filterByKey} from '../utils';
+import {CallbackFn, ControlInterface} from '../model/control.interface';
 
 /**
  * Класс инкапсулирует логику подписки нажатия на различные клавиши клавиатуры
@@ -55,45 +55,34 @@ export default class KeyboardControl implements ControlInterface {
    * @private
    */
   private initHandlers(key: string, isDown: boolean): void {
-    this.arrowLeft(key, isDown)
-    this.arrowRight(key, isDown)
-    this.arrowUp(key, isDown)
-  }
-
-  /**
-   * Триггреим событие нажатия на стрелку влево
-   * @param key
-   * @param isDown
-   * @private
-   */
-  private arrowLeft(key: string, isDown: boolean): void {
     if (key === 'ArrowLeft') {
       this.arrowLeft$.next(isDown)
     }
-  }
-
-  /**
-   * Триггерим событие нажатия на стрелку вправо
-   * @param key
-   * @param isDown
-   * @private
-   */
-  private arrowRight(key: string, isDown: boolean): void {
     if (key === 'ArrowRight') {
       this.arrowRight$.next(isDown)
     }
-  }
-
-  /**
-   * Триггерим событие нажатия на стрелку вверх
-   * @param key
-   * @param isDown
-   * @private
-   */
-  private arrowUp(key: string, isDown: boolean): void {
     if (key === 'ArrowUp') {
       this.arrowUp$.next(isDown)
     }
+  }
+
+  arrowLeft(fn: CallbackFn<boolean>): void {
+    this.arrowLeft$.subscribe(res => fn(res))
+  }
+
+  arrowRight(fn: CallbackFn<boolean>): void {
+    this.arrowRight$.subscribe(res => fn(res))
+  }
+
+  arrowUp(fn: CallbackFn<boolean>): void {
+    this.arrowUp$.subscribe(res => fn(res))
+  }
+
+
+  handle(key: string|string[], fn: (data: EventControl) => void): void {
+    this.handle$
+      .pipe(filterByKey(key))
+      .subscribe((res) => fn(res))
   }
 
 }

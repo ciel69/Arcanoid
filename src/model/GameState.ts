@@ -1,4 +1,4 @@
-import {BallInterface} from './ball.interface';
+import {BallInterface} from '../types/ball.interface';
 
 export default interface GameState {
   currentLevel: number,

@@ -44,6 +44,10 @@ export default class CanvasView implements ViewInterface {
     }
   }
 
+  ticker(fn: (data: number) => void): void {
+    this.ticker$.subscribe(res => fn(res))
+  }
+
   set(x: number, y: number): void {
     console.log('set', x);
     this.ctx!.translate(x, y)
@@ -68,7 +72,7 @@ export default class CanvasView implements ViewInterface {
   }
 
   addChild(image: BasicElementInterface): void {
-    if (image.isRotate) return
+    if (image.isRotate || image.destroyed) return
     this.ctx!.drawImage(image.texture, (image.x - image.width! / 2), (image.y - image.height!/2), image.width!, image.height!)
   }
 
@@ -90,13 +94,18 @@ export default class CanvasView implements ViewInterface {
     }
   }
 
-  rotateAndPaintImage(image: HTMLImageElement, angle: number, x: number, y: number, width: number, height: number) {
+  rotateAndPaintImage(image: HTMLImageElement, angle: number, x: number, y: number, width: number, height: number): void {
     this.ctx!.save()
     this.ctx!.translate(x, y)
     this.ctx!.rotate(angle)
     this.ctx!.drawImage(image, -width/2, -height/2, width, height)
     this.ctx!.translate(-x, -y)
     this.ctx!.restore()
+  }
+
+  fillRect(x: number, y: number, width: number, height: number, color: string): void {
+    this.ctx!.fillStyle = color;
+    this.ctx!.fillRect(x, y, width, height)
   }
 
 }

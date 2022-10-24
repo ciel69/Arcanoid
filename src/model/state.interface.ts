@@ -1,7 +1,13 @@
+import {BehaviorSubject} from 'rxjs';
+
 export interface StateInterface {
-  create(key: string, value: any): void
+
+  changeState$: BehaviorSubject<string>
+
+  create<T>(key: string, value: T): void
   update<T>(key: string, field: keyof T, value: any): void
   get<T>(key: string): T
+  subscribeState<T>(key: string, fn: (data: T) => void): void
 }
 
 export interface BallState {

@@ -21,6 +21,10 @@ export default class Element implements ElementInterface {
         return this.elements.get(key) || null
     }
 
+    deleteElement(key: string): void {
+        this.elements.delete(key)
+    }
+
     getElements(): BasicElementInterface[] {
         return Array.from(this.elements.values())
     }

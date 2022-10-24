@@ -1,6 +1,5 @@
 import '../styles/main.css';
 import '../assets/fonts/kongtext.ttf';
-// import './init';
 import './main';
 
 /** Находим элемент с нашим приложением */

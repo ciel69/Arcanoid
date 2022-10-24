@@ -8,9 +8,15 @@ export interface ParamsCanvas {
   height: number
 }
 
-export interface ViewInterface  {
+export interface ViewInterface {
 
   ticker$: BehaviorSubject<number>;
+
+  /**
+   * Функция вызывает коллбэк на каждый кадр
+   * @param fn
+   */
+  ticker(fn: (data: number) => void): void
 
   configure(params: ParamsCanvas): void
 
@@ -18,6 +24,7 @@ export interface ViewInterface  {
   getHeight(): number
 
   set?(x: number, y: number): void
+  fillRect(x: number, y: number, width: number, height: number, color: string): void
   addChild(image: BasicElementInterface): void
   addChildren(images: BasicElementInterface[]): void
   rotateElement(element: BasicElementInterface, rotateSpeed: number): Function
