@@ -23,7 +23,7 @@ import InfoService from '../services/info.service'
 import ListenerService from '../services/listener.service'
 
 import messages from '../data/messages'
-import rules from "../main/game_config"
+import rules from '../main/game_config'
 
 const gameState = {
   currentLevel: 0,
@@ -72,7 +72,7 @@ state.create<GameState>('gameState', gameState)
 
 state.create('rules', rules)
 
-// Прикладной слой (описание юзкейсов, событий и тд)
+// Прикладной слой (событий и тд)
 container.registerSingleton<ListenerInterface, ListenerService>()
 
 setTimeout(() => container.get<IGame>())
