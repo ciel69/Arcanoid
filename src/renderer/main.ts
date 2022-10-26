@@ -13,7 +13,7 @@ import {CollideInterface} from '../model/collide.interface';
 import {GameInterface, GameState} from '../model/game.interface';
 import {ListenerInterface} from '../model/listener.interface';
 
-import {Game, IGame} from '../game';
+import {Game, IGame} from './game';
 
 import BallService from '../services/ball.service';
 import PlatformService from '../services/platform.service';
