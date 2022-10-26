@@ -11,6 +11,7 @@ import {BallInterface, BrickInterface, ElementInterface, PlatformInterface} from
 import {StateInterface} from '../model/state.interface';
 import {CollideInterface} from '../model/collide.interface';
 import {GameInterface, GameState} from '../model/game.interface';
+import {ListenerInterface} from '../model/listener.interface';
 
 import {Game, IGame} from '../game';
 
@@ -19,6 +20,7 @@ import PlatformService from '../services/platform.service';
 import BrickService from '../services/brick.service';
 import CollideService from '../services/collide.service';
 import GameService from '../services/game.service';
+import ListenerService from '../services/listener.service';
 
 import messages from '../data/messages';
 import rules from "../main/game_config";
@@ -70,6 +72,7 @@ state.create<GameState>('gameState', gameState)
 state.create('rules', rules)
 
 // Прикладной слой (описание юзкейсов, событий и тд)
+container.registerSingleton<ListenerInterface, ListenerService>();
 container.registerSingleton<IGame, Game>();
 
 setTimeout(() => container.get<IGame>())

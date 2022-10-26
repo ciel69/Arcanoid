@@ -1,9 +1,8 @@
-import {ControlInterface} from '../model/control.interface'
 import {ViewInterface} from '../model/view.interface'
 import {BallInterface, BrickInterface, ElementInterface, PlatformInterface} from '../model/element.interface'
-import {ArrowState, BallState, StateInterface} from '../model/state.interface'
-import {RulesInterface} from '../model/rules.interface';
+import {BallState, StateInterface} from '../model/state.interface'
 import {GameInterface, GameState} from '../model/game.interface'
+import {ListenerInterface} from '../model/listener.interface';
 
 import levels from '../data/levels'
 import messages from '../data/messages'
@@ -15,7 +14,7 @@ export interface IGame {
 export class Game implements IGame {
 
   constructor(
-    private directionHandler: ControlInterface,
+    private listenerService: ListenerInterface,
     private view: ViewInterface,
     private elementService: ElementInterface,
     private state: StateInterface,
@@ -39,7 +38,7 @@ export class Game implements IGame {
   }
 
   init(): void {
-    this.handleEvents()
+    this.listenerService.toListen()
     const center = this.view.getWidth() / 2
     this.ballService.create(center, this.view.getHeight() - 41)
     this.platformService.create(center, this.view.getHeight() - 20)
@@ -100,62 +99,6 @@ export class Game implements IGame {
     this.state.updateByField<GameState>('gameState', 'currentLevel', localLevel)
     this.ballService.resetAll()
     this.createLevel(localLevel)
-  }
-
-  /**
-   * Подписки на события
-   */
-  handleEvents(): void {
-    // Подписка на изменение стейта
-    this.state.subscribeState<GameState>('gameState', (state) => {
-      this.gameInfo.show(state)
-    })
-
-    // Подписка на нажатие пробела
-    this.directionHandler.handle(' ', (res) => {
-      if (res.isDown) {
-        const gameState = this.state.get<GameState>('gameState')
-        let state = {
-          message: messages.game,
-          showStartMenu: false,
-          isGame: true,
-        } as GameState
-        if (gameState.isGameOver) {
-          state = {
-            ...state,
-            isGameOver: false,
-            lives: 3,
-            score: 0,
-          }
-        }
-        this.state.update<GameState>('gameState', state)
-      }
-    })
-
-    // Подписка на нажатие клавиши "G"
-    this.directionHandler.handle('g', (res) => {
-      if (res.isDown) {
-        this.state.updateByField<RulesInterface>('rules', 'godMode', !this.state.get<RulesInterface>('rules').godMode)
-      }
-    })
-
-    // Продписка на нажатие стрелки вверх
-    this.directionHandler.arrowUp((isDown) => {
-      const gameState = this.state.get<GameState>('gameState')
-      if (isDown && !gameState.showStartMenu) {
-        this.state.updateByField<BallState>('ball', 'isFlying', true)
-      }
-    })
-
-    // Продписка на нажатие стрелки влево
-    this.directionHandler.arrowLeft((isDown) => {
-      this.state.updateByField<ArrowState>('arrows', 'left', isDown)
-    })
-
-    // Продписка на нажатие стрелки вправо
-    this.directionHandler.arrowRight((isDown) => {
-      this.state.updateByField<ArrowState>('arrows', 'right', isDown)
-    })
   }
 
   /**
