@@ -1,6 +1,6 @@
-import {GameInterface, GameState} from '../model/game.interface';
+import {InfoInterface, GameState} from '../model/info.interface';
 
-export default class GameService implements GameInterface {
+export default class InfoService implements InfoInterface {
 
   constructor(
   ) {

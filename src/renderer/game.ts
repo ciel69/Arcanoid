@@ -1,7 +1,7 @@
 import {ViewInterface} from '../model/view.interface'
 import {BallInterface, BrickInterface, ElementInterface, PlatformInterface} from '../model/element.interface'
 import {BallState, StateInterface} from '../model/state.interface'
-import {GameInterface, GameState} from '../model/game.interface'
+import {InfoInterface, GameState} from '../model/info.interface'
 import {ListenerInterface} from '../model/listener.interface';
 
 import levels from '../data/levels'
@@ -21,7 +21,7 @@ export class Game implements IGame {
     private ballService: BallInterface,
     private platformService: PlatformInterface,
     private brickService: BrickInterface,
-    private gameInfo: GameInterface,
+    private gameInfo: InfoInterface,
   ) {
 
     // Конфигурируем холст

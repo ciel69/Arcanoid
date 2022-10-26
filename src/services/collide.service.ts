@@ -3,7 +3,7 @@ import {BallInterface, BasicElementInterface, BrickInterface, ElementInterface} 
 import {ViewInterface} from '../model/view.interface';
 import {BallState, StateInterface} from '../model/state.interface';
 import {RulesInterface} from '../model/rules.interface';
-import {GameState} from '../model/game.interface';
+import {GameState} from '../model/info.interface';
 
 export default class CollideService implements CollideInterface {
 

@@ -1,6 +1,6 @@
 import {ListenerInterface} from '../model/listener.interface';
 import {ArrowState, BallState, StateInterface} from '../model/state.interface';
-import {GameInterface, GameState} from '../model/game.interface';
+import {InfoInterface, GameState} from '../model/info.interface';
 import {ControlInterface} from '../model/control.interface';
 import {RulesInterface} from '../model/rules.interface';
 
@@ -10,7 +10,7 @@ export default class ListenerService implements ListenerInterface {
 
   constructor(
     private state: StateInterface,
-    private gameInfo: GameInterface,
+    private gameInfo: InfoInterface,
     private directionHandler: ControlInterface,
   ) {
   }

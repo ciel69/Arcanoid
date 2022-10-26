@@ -1,5 +1,5 @@
 
-export interface GameInterface {
+export interface InfoInterface {
   show(gameState: GameState): void
 }
 
