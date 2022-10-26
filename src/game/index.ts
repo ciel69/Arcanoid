@@ -31,14 +31,15 @@ export class Game implements IGame {
         width: 960,
         height: 600
       })
+
     this.init()
+    this.listenerService.toListen()
 
     const gameState = state.get<GameState>('gameState')
     this.gameInfo.show(gameState)
   }
 
   init(): void {
-    this.listenerService.toListen()
     const center = this.view.getWidth() / 2
     this.ballService.create(center, this.view.getHeight() - 41)
     this.platformService.create(center, this.view.getHeight() - 20)
