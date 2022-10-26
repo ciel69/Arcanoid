@@ -51,7 +51,7 @@ export default class CollideService implements CollideInterface {
       if (gameState.lives > 0) {
         this.state.updateByField<GameState>('gameState', 'lives', --gameState.lives)
         this.state.updateByField<BallState>('ball', 'isFlying', false)
-        this.ballService.reset(ball)
+        this.ballService.reset!(ball)
       }
     }
 
@@ -106,11 +106,8 @@ export default class CollideService implements CollideInterface {
         /** Прячем сбитый кирпичик */
         el.destroyed = true
 
-        this.elementService.deleteElement(el.id!)
-
-        /** Проигрываем звук удара */
+        this.brickService.delete(el)
         ball.setVelocity(...this.getBounceDirection(x, y, ball, el))
-        // this.bounce(this.getBounceDirection(x, y, el))
       }
     })
 

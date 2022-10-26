@@ -7,29 +7,12 @@ import {GameInterface, GameState} from '../model/game.interface'
 
 import levels from '../data/levels'
 import messages from '../data/messages'
-import rules from '../main/game_config';
 
 export interface IGame {
   init(): void
 }
 
 export class Game implements IGame {
-
-  private gameState = {
-    currentLevel: 0,
-    showStartMenu: true,
-    showLevel: true,
-    lives: 3,
-    score: 0,
-    lastScore: 0,
-    bestScore: 0,
-    isMusicOn: false,
-    isGameOver: false,
-    isGame: false,
-    isRestart: false,
-    isLevelChanged: false,
-    message: messages.start,
-  }
 
   constructor(
     private directionHandler: ControlInterface,
@@ -49,8 +32,10 @@ export class Game implements IGame {
         width: 960,
         height: 600
       })
-    this.initState()
     this.init()
+
+    const gameState = state.get<GameState>('gameState')
+    this.gameInfo.show(gameState)
   }
 
   init(): void {
@@ -62,6 +47,7 @@ export class Game implements IGame {
 
     this.createLevel(gameState.currentLevel)
 
+    // Основная логика игры вызываемая на каждый тик анимации
     this.view.ticker(() => {
       const gameState = this.state.get<GameState>('gameState')
       if (gameState.isGameOver) {
@@ -81,7 +67,7 @@ export class Game implements IGame {
       this.view.addChildren(gameElements)
 
       if (gameState.lives === 0) {
-        this.gameOverHandler()
+        this.gameOver()
       }
 
       if (gameState.showStartMenu) {
@@ -90,24 +76,10 @@ export class Game implements IGame {
     })
   }
 
-  initState(): void {
-    this.state.create('arrows', {
-      left: false,
-      right: false,
-    })
-    this.state.create('ball', {
-      isFlying: false
-    })
-    this.state.create('rules', rules)
-
-    this.state.create<GameState>('gameState', this.gameState)
-    this.gameInfo.show(this.gameState)
-
-    this.state.subscribeState<GameState>('gameState', (state) => {
-      this.gameInfo.show(state)
-    })
-  }
-
+  /**
+   * Построение кирпичиков на уровне
+   * @param level
+   */
   createLevel(level: number): void {
     levels[level].forEach((row, rowIndex) => {
       row.forEach((el, elIndex) => {
@@ -118,6 +90,9 @@ export class Game implements IGame {
     })
   }
 
+  /**
+   * Переход на следующий уровеннь
+   */
   nextLevel(): void {
     const gameState = this.state.get<GameState>('gameState')
     const localLevel = gameState.currentLevel + 1
@@ -131,6 +106,12 @@ export class Game implements IGame {
    * Подписки на события (в текущей реализации только клавиатуры)
    */
   handleEvents(): void {
+    // Подписка на изменение стейта
+    this.state.subscribeState<GameState>('gameState', (state) => {
+      this.gameInfo.show(state)
+    })
+
+    // Подписка на нажатие пробела
     this.directionHandler.handle(' ', (res) => {
       if (res.isDown) {
         const gameState = this.state.get<GameState>('gameState')
@@ -140,7 +121,6 @@ export class Game implements IGame {
           isGame: true,
         } as GameState
         if (gameState.isGameOver) {
-          this.createLevel(gameState.currentLevel)
           state = {
             ...state,
             isGameOver: false,
@@ -152,12 +132,14 @@ export class Game implements IGame {
       }
     })
 
+    // Подписка на нажатие клавиши "G"
     this.directionHandler.handle('g', (res) => {
       if (res.isDown) {
         this.state.updateByField<RulesInterface>('rules', 'godMode', !this.state.get<RulesInterface>('rules').godMode)
       }
     })
 
+    // Продписка на нажатие стрелки вверх
     this.directionHandler.arrowUp((isDown) => {
       const gameState = this.state.get<GameState>('gameState')
       if (isDown && !gameState.showStartMenu) {
@@ -165,23 +147,32 @@ export class Game implements IGame {
       }
     })
 
+    // Продписка на нажатие стрелки влево
     this.directionHandler.arrowLeft((isDown) => {
       this.state.updateByField<ArrowState>('arrows', 'left', isDown)
     })
 
+    // Продписка на нажатие стрелки вправо
     this.directionHandler.arrowRight((isDown) => {
       this.state.updateByField<ArrowState>('arrows', 'right', isDown)
     })
   }
 
+  /**
+   * Затемнение игрового поля
+   */
   shadowScreen(): void {
     this.view.fillRect(0, 0, this.view.getWidth(), this.view.getHeight(), 'rgba(0, 0, 0, 0.8)')
   }
 
-  gameOverHandler(): void {
+  /**
+   * Алгоритм вызываемый при проигрыше
+   */
+  gameOver(): void {
     const gameState = this.state.get<GameState>('gameState')
     const state = {
       message: messages.gameOver,
+      currentLevel: 0,
       showLevel: false,
       isGame: false,
       showStartMenu: false,
@@ -191,9 +182,12 @@ export class Game implements IGame {
     if (gameState.bestScore < gameState.score) {
       state.bestScore = gameState.score
     }
+    this.ballService.resetAll()
+    this.brickService.deleteAll()
 
     this.state.update<GameState>('gameState', state)
 
+    this.createLevel(state.currentLevel)
     this.shadowScreen()
   }
 

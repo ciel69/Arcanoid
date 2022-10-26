@@ -1,4 +1,3 @@
-import {BehaviorSubject} from 'rxjs';
 import {BasicElementInterface} from './element.interface';
 
 
@@ -9,9 +8,6 @@ export interface ParamsCanvas {
 }
 
 export interface ViewInterface {
-
-  ticker$: BehaviorSubject<number>;
-
   /**
    * Функция вызывает коллбэк на каждый кадр
    * @param fn

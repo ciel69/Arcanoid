@@ -4,17 +4,14 @@ import {
 } from '../model/element.interface';
 
 import brickBg from '../assets/images/brick.png'
-// import sound from '../services/Sound';
 
 export default class BrickService implements BrickInterface {
 
   bricks: BasicElementInterface[] = []
 
   constructor(
-    // private view: ViewInterface,
     private elementService: ElementInterface,
   ) {
-    // rules.godMode = true
   }
 
   /**
@@ -40,8 +37,16 @@ export default class BrickService implements BrickInterface {
     return !this.bricks.filter(item => !item.destroyed).length
   }
 
-  render(): void {
+  delete(el: BasicElementInterface): void {
+    this.bricks = this.bricks.filter(item => item.id! !== item.id!)
+    this.elementService.deleteElement(el.id!)
+  }
 
+  deleteAll(): void {
+    this.bricks.forEach(item => {
+      this.delete(item)
+    })
+    this.bricks = []
   }
 
   move(): void {

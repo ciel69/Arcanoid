@@ -57,7 +57,7 @@ export default class BallService implements BallInterface {
     return this.balls
   }
 
-  deleteBall(ball: BasicElementInterface): void {
+  delete(ball: BasicElementInterface): void {
     this.balls = this.balls.filter(item => item.id! !== item.id!)
     this.elementService.deleteElement(ball.id!)
   }

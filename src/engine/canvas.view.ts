@@ -6,7 +6,7 @@ import {BasicElementInterface} from '../model/element.interface';
 
 export default class CanvasView implements ViewInterface {
 
-  ticker$ = new BehaviorSubject<number>(0).pipe(tap(() => {
+  private ticker$ = new BehaviorSubject<number>(0).pipe(tap(() => {
     this.ctx!.clearRect(0, 0, this.width, this.height)
   })) as BehaviorSubject<number>
 
@@ -27,7 +27,6 @@ export default class CanvasView implements ViewInterface {
     this.idContainer = data.idContainer
     this.setWidth(data.width)
     this.setHeight(data.height)
-    this.canvas = document.getElementById(data.idContainer) as HTMLCanvasElement
 
     this.run(Date.now())
   }
