@@ -33,13 +33,13 @@ export interface BasicServiceInterface {
   move(): void
   move<T>(x: 0 | 1 | -1): T
   move<T>(x: 0 | 1 | -1, y: 0 | 1 | -1): T
-  reset?(el: BasicElementInterface): void
+  reset?(el: BasicElementInterface, x?: number): void
   delete?(el: BasicElementInterface): void
 }
 
 export interface BallInterface extends BasicServiceInterface {
   getBalls(): BasicElementInterface[]
-  resetAll(): void
+  resetAll(x?: number): void
 }
 
 export interface PlatformInterface extends BasicServiceInterface {

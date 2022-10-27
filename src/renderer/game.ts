@@ -40,10 +40,10 @@ export class Game implements IGame {
   }
 
   init(): void {
+    const gameState = this.state.get<GameState>('gameState')
     const center = this.view.getWidth() / 2
     this.ballService.create(center, this.view.getHeight() - 41)
     this.platformService.create(center, this.view.getHeight() - 20)
-    const gameState = this.state.get<GameState>('gameState')
 
     this.createLevel(gameState.currentLevel)
 
@@ -95,10 +95,11 @@ export class Game implements IGame {
    */
   nextLevel(): void {
     const gameState = this.state.get<GameState>('gameState')
+    const platform = this.elementService.getElement('platform')!
     const localLevel = gameState.currentLevel + 1
     this.state.updateByField<BallState>('ball', 'isFlying', false)
     this.state.updateByField<GameState>('gameState', 'currentLevel', localLevel)
-    this.ballService.resetAll()
+    this.ballService.resetAll(platform.x)
     this.createLevel(localLevel)
   }
 
@@ -113,6 +114,7 @@ export class Game implements IGame {
    * Алгоритм вызываемый при проигрыше
    */
   gameOver(): void {
+    const platform = this.elementService.getElement('platform')!
     const gameState = this.state.get<GameState>('gameState')
     const state = {
       message: messages.gameOver,
@@ -126,7 +128,7 @@ export class Game implements IGame {
     if (gameState.bestScore < gameState.score) {
       state.bestScore = gameState.score
     }
-    this.ballService.resetAll()
+    this.ballService.resetAll(platform.x)
     this.brickService.deleteAll()
 
     this.state.update<GameState>('gameState', state)

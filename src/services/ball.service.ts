@@ -62,17 +62,16 @@ export default class BallService implements BallInterface {
     this.elementService.deleteElement(ball.id!)
   }
 
-  reset(ball: BasicElementInterface): void {
+  reset(ball: BasicElementInterface, x: number = 0): void {
     const localId = ball.id!
-    const platform = this.elementService.getElement('platform')!
     ball.destroyed = true
     this.balls = this.balls.filter(item => !item.destroyed)
-    this.create(platform.x, this.view.getHeight() - 41, localId)
+    this.create(x, this.view.getHeight() - 41, localId)
   }
 
-  resetAll(): void {
+  resetAll(x: number): void {
     this.balls.forEach(item => {
-      this.reset(this.elementService.getElement(item.id!)!)
+      this.reset(this.elementService.getElement(item.id!)!, x)
     })
   }
 

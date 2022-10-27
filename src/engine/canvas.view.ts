@@ -48,7 +48,6 @@ export default class CanvasView implements ViewInterface {
   }
 
   set(x: number, y: number): void {
-    console.log('set', x);
     this.ctx!.translate(x, y)
   }
 

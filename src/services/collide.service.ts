@@ -17,6 +17,7 @@ export default class CollideService implements CollideInterface {
   }
 
   collisionBallWithBorder(ball: BasicElementInterface): Velocity {
+    const platform = this.elementService.getElement('platform')!
     const rules = this.state.get<RulesInterface>('rules')
     const radius = ball.width! / 2
     const velocity: Velocity = [ball.xVelocity, ball.yVelocity]
@@ -51,7 +52,7 @@ export default class CollideService implements CollideInterface {
       if (gameState.lives > 0) {
         this.state.updateByField<GameState>('gameState', 'lives', --gameState.lives)
         this.state.updateByField<BallState>('ball', 'isFlying', false)
-        this.ballService.reset!(ball)
+        this.ballService.reset!(ball, platform.x)
       }
     }
 
